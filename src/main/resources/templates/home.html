@@ -6,6 +6,37 @@
 </head>
 <body>
 
+<div th:switch="${patterns}">
+  <h2 th:case="null">No Patterns yet!</h2>
+  <div th:case="*">
+    <h2>Patterns</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Pattern Matrix</th>
+        <th>Stitches</th>
+        <th>Rows</th>
+        <th>Color Scheme</th>
+        <th>Creation Date</th>
+        <th>Delete</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr th:each="pattern : ${patterns}">
+          <td th:text="${pattern.name}"></td>
+          <td th:text="${pattern.patternMatrix}"></td>
+          <td th:text="${pattern.stitches}"></td>
+          <td th:text="${pattern.rows}"></td>
+          <td th:text="${pattern.colorScheme}"></td>
+          <td th:text="${pattern.creationDate}"></td>
+          <td><a th:href="@{/delete/{id}(id=${pattern.ID})}">Delete</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p><a href="/createpattern">Create a new pattern</a></p>
+</div>
 
 
 </body>

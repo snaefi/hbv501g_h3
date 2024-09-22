@@ -6,7 +6,7 @@ import java.util.List;
 public interface PatternService {
     Pattern findByName(String name);
     List<Pattern> findAll();
-    Pattern findById(Long ID);
+    Pattern findByID(Long ID);
     Pattern save(Pattern pattern);
     void delete(Pattern pattern);
 }

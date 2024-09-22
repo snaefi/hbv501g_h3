@@ -54,12 +54,14 @@
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 
-		<!-- Database Driver (H2 in-memory)
+		<!-- Database Driver (H2 in-memory)-->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<version>2.2.220</version> <!-- or the latest stable version -->
 			<scope>runtime</scope>
-		</dependency>-->
+		</dependency>
+
 
 		<!-- Spring Session -->
 		<dependency>
