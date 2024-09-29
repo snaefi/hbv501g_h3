@@ -1,5 +1,7 @@
 package is.hi.hbv501g.hbv501g_h3.Controllers;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import is.hi.hbv501g.hbv501g_h3.Services.PatternService;
 import is.hi.hbv501g.hbv501g_h3.Services.UserService;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +46,35 @@ public class HomeController {
         return "home";
     }
 
+    @RequestMapping(value = "/pattern", method = RequestMethod.GET)
+    public ResponseEntity<?> patternById(@RequestParam("id") long id) {
+        Pattern patternResult = patternService.findByID(id);
+
+        if (patternResult != null) {
+            return ResponseEntity.ok(patternResult);
+        } else {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "pattern not found");
+
+            // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+    }
+
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public ResponseEntity<?> userById(@RequestParam("id") long id, Model model) {
+        User userResult = userService.findByID(id);
+
+        if (userResult != null) {
+            return ResponseEntity.ok(userResult);
+        } else {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "user not found");
+
+            // 404
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+    }
 
     @RequestMapping(value="/createpattern", method = RequestMethod.GET)
     public String createPatternForm(Pattern pattern) {
