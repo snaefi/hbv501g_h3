@@ -9,10 +9,7 @@ import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,42 +44,38 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/patterns", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<?> getPatterns(@RequestParam(value = "id", required = false) Long id) {
+    @ResponseBody
+    public Object getPatterns(@RequestParam(value = "id", required = false) Long id) {
         if (id != null) {
             Pattern patternResult = patternService.findByID(id);
-
             if (patternResult != null) {
-                return ResponseEntity.ok(patternResult);
+                return patternResult;
             } else {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("error", "pattern not found");
-
-                //404
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+                return errorResponse;
             }
         } else {
             List<Pattern> allPatterns = patternService.findAll();
-            return ResponseEntity.ok(allPatterns);
+            return allPatterns;
         }
     }
 
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<?> getUsers(@RequestParam(value = "id", required = false) Long id) {
+    @ResponseBody
+    public Object getUsers(@RequestParam(value = "id", required = false) Long id) {
         if (id != null) {
             User userResult = userService.findByID(id);
-
             if (userResult != null) {
-                return ResponseEntity.ok(userResult);
+                return userResult;
             } else {
                 Map<String, String> errorResponse = new HashMap<>();
                 errorResponse.put("error", "user not found");
-
-                //404
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+                return errorResponse;
             }
         } else {
             List<User> allUsers = userService.findAll();
-            return ResponseEntity.ok(allUsers);
+            return allUsers;
         }
     }
 
