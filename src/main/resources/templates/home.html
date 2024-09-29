@@ -78,11 +78,11 @@
 	<h1>Pattern result</h1>
 	<!-- <a th:href="@{/order/details(id=3)}"></a> -->
 	<!-- <a th:href="@{/order/details(id=3)}"> -->
-  <a th:href="@{/pattern(id=${patternResult.ID})}" th:text="${patternResult.name}"></a>
+  <a th:href="@{/patterns(id=${patternResult.ID})}" th:text="${patternResult.name}"></a>
 </div>
 <div th:if="${userResult}">
 	<h1>User result</h1>
-  <a th:href="@{/user(id=${userResult.ID})}" th:text="${userResult.username}"></a>
+  <a th:href="@{/users(id=${userResult.ID})}" th:text="${userResult.username}"></a>
 </div>
 
 </body>
