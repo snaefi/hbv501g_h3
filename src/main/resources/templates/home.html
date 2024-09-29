@@ -6,14 +6,17 @@
 </head>
 <body>
 
+<!-- display all patterns if any found-->
+<div th:if="${patterns}">
 <div th:switch="${patterns}">
-  <h2 th:case="null">No Patterns yet!</h2>
+  <!--h2 th:case="null">No Patterns yet!</--h2 -->
   <div th:case="*">
     <h2>Patterns</h2>
     <table>
       <thead>
       <tr>
         <th>Name</th>
+        <th>ID</th>
         <th>Pattern Matrix</th>
         <th>Stitches</th>
         <th>Rows</th>
@@ -25,6 +28,7 @@
       <tbody>
         <tr th:each="pattern : ${patterns}">
           <td th:text="${pattern.name}"></td>
+          <td th:text="${pattern.ID}"></td>
           <td th:text="${pattern.patternMatrix}"></td>
           <td th:text="${pattern.stitches}"></td>
           <td th:text="${pattern.rows}"></td>
@@ -37,7 +41,49 @@
   </div>
   <p><a href="/createpattern">Create a new pattern</a></p>
 </div>
+</div>
 
+<!-- display all users if any found-->
+<div th:if="${users}">
+<div th:switch="${users}">
+  <!-- h2 th:case="null">No Users yet!</h2 -->
+  <div th:case="*">
+    <h2>Users</h2>
+    <table>
+      <thead>
+      <tr>
+        <th>Username</th>
+        <th>ID</th>
+        <th>email</th>
+      </tr>
+      </thead>
+      <tbody>
+        <tr th:each="user : ${users}">
+          <td th:text="${user.username}"></td>
+          <td th:text="${user.ID}"></td>
+          <td th:text="${user.email}"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- Search form -->
+<form action="/search" method="get">
+  <label for="searchId">Search by ID:</label>
+  <input type="number" id="searchId" name="id" required>
+  <button type="submit">Search</button>
+</form>
+
+
+<!-- Display search results (for patterns and users) -->
+<div th:if="${patternResult}">
+  <p th:text="${patternResult.name}"></p>
+</div>
+<div th:if="${userResult}">
+  <p th:text="${userResult.username}"></p>
+</div>
 
 </body>
 </html>
