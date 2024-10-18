@@ -31,7 +31,6 @@ public class PatternServiceImplementation implements PatternService {
         return patternRepository.findAll();
     }
 
-
     @Override
     public Pattern findById(Long ID){
         Pattern pattern = patternRepository.findById(ID).orElse(null);
@@ -49,11 +48,65 @@ public class PatternServiceImplementation implements PatternService {
     }
 
     @Override
+    public boolean updatePattern(Long ID, Long ownerID,
+                                 List<Integer> newPatternMatrix,
+                                 List<String> newColorScheme,
+                                 String newName,
+                                 Integer stitches,
+                                 Integer rows,
+                                 Integer numberOfColors) {
+        Optional<Pattern> optionalPattern = patternRepository.findByIDAndOwnerID(ID, ownerID);
+        if (optionalPattern.isPresent()) {
+            Pattern pattern = optionalPattern.get();
+
+            if (newPatternMatrix != null) {
+                pattern.setPatternMatrix(newPatternMatrix);
+            }
+
+            if (newColorScheme != null) {
+                pattern.setColorScheme(newColorScheme);
+            }
+
+            if (newName != null) {
+                pattern.setName(newName);
+            }
+            pattern.setModificationDate(new Date());
+            patternRepository.save(pattern);
+            return true;
+        }
+        return false;
+    }
+
+
+    @Override
     public boolean changePatternName(Long ID, Long ownerID, String newName) {
         Pattern pattern = patternRepository.findByIDAndOwnerID(ID,ownerID).orElse(null);
         if(pattern != null){
             pattern.setName(newName);
             pattern.setModificationDate(new Date());
+            patternRepository.save(pattern);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean makePublic(Long ID, Long ownerID){
+        Pattern pattern = patternRepository.findByIDAndOwnerID(ID,ownerID).orElse(null);
+        if(pattern != null){
+            pattern.setPublic(true);
+            //Viljum við updatea last modification hér?
+            patternRepository.save(pattern);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean makePrivate(Long ID, Long ownerID) {
+        Pattern pattern = patternRepository.findByIDAndOwnerID(ID,ownerID).orElse(null);
+        if (pattern != null) {
+            pattern.setPublic(false);
             patternRepository.save(pattern);
             return true;
         }
