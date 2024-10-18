@@ -1,26 +1,38 @@
 package is.hi.hbv501g.hbv501g_h3.Persistence.Entities;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.Date;
 
+@Entity
+@Table(name="patterns")
 public class Pattern {
+    @Id
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name = "id") // Tell JPA to map this field to the column 'id'
     private Long ID;
-    private Long ownerID;
+    //private Long ownerID;
     private String name;
+    @ElementCollection
     private List<Integer> patternMatrix;
     private Integer rows;
     private Integer stitches;
     private Integer numberOfColors;
+    @ElementCollection
     private List<String> colorScheme;
     private Date creationDate;
     private Date modificationDate;
     private Boolean isPublic;
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private User owner;
+
 
     public Pattern() {
     }
 
-    public Pattern(Long ownerID, String name, List<Integer> patternMatrix, Integer rows, Integer stitches, Integer numberOfColors, List<String> colorScheme, Date creationDate, Date modificationDate, Boolean isPublic) {
-        this.ownerID = ownerID;
+    public Pattern(String name, List<Integer> patternMatrix, Integer rows, Integer stitches, Integer numberOfColors, List<String> colorScheme, Date creationDate, Date modificationDate, Boolean isPublic, User owner) {
         this.name = name;
         this.patternMatrix = patternMatrix;
         this.rows = rows;
@@ -30,6 +42,7 @@ public class Pattern {
         this.creationDate = creationDate;
         this.modificationDate = modificationDate;
         this.isPublic = isPublic;
+        this.owner = owner;
     }
 
     public Long getID() {
@@ -38,14 +51,6 @@ public class Pattern {
 
     public void setID(Long ID) {
         this.ID = ID;
-    }
-
-    public Long getOwnerID() {
-        return ownerID;
-    }
-
-    public void setOwnerID(Long ownerID) {
-        this.ownerID = ownerID;
     }
 
     public String getName() {
@@ -118,5 +123,13 @@ public class Pattern {
 
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 }

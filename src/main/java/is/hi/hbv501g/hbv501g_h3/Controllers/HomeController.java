@@ -37,17 +37,17 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public String searchById(@RequestParam("id") long id, Model model) {
-        model.addAttribute("patternResult", patternService.findByID(id));
-        model.addAttribute("userResult", userService.findByID(id));
+    public String searchById(@RequestParam("id") long ID, Model model) {
+        model.addAttribute("patternResult", patternService.findById(ID));
+        model.addAttribute("userResult", userService.findById(ID));
         return "home";
     }
 
     @RequestMapping(value = "/patterns", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Object getPatterns(@RequestParam(value = "id", required = false) Long id) {
-        if (id != null) {
-            Pattern patternResult = patternService.findByID(id);
+    public Object getPatterns(@RequestParam(value = "id", required = false) Long ID) {
+        if (ID != null) {
+            Pattern patternResult = patternService.findById(ID);
             if (patternResult != null) {
                 return patternResult;
             } else {
@@ -63,9 +63,9 @@ public class HomeController {
 
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Object getUsers(@RequestParam(value = "id", required = false) Long id) {
-        if (id != null) {
-            User userResult = userService.findByID(id);
+    public Object getUsers(@RequestParam(value = "id", required = false) Long ID) {
+        if (ID != null) {
+            User userResult = userService.findById(ID);
             if (userResult != null) {
                 return userResult;
             } else {
@@ -94,8 +94,8 @@ public class HomeController {
     }
 
     @RequestMapping(value="/delete/{id}", method = RequestMethod.GET)
-        public String deletePattern(@PathVariable("id") long id, Model model){
-            Pattern patternToDelete = patternService.findByID(id); //business logic
+        public String deletePattern(@PathVariable("id") long ID, Model model){
+            Pattern patternToDelete = patternService.findById(ID); //business logic
             patternService.delete(patternToDelete);
             return "redirect:/";
         }

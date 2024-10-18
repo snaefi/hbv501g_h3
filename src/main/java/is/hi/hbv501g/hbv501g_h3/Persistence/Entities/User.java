@@ -1,29 +1,39 @@
 package is.hi.hbv501g.hbv501g_h3.Persistence.Entities;
 
-import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.Pattern;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
-import java.util.LinkedList;
 import java.util.Queue;
 
 
-
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id") // Tell JPA to map this field to the column 'id'
     private Long ID;
     private String username;
     private String password;
     private String email;
-    private List<Pattern> favoritePatterns;
+    @ElementCollection
+    private List<Long> favoritePatternsIds;
+    @ElementCollection
     private Queue<String> sharedWithQueue;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pattern> ownedPatterns = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String username, String password, String email, List<Pattern> favoritePatterns, Queue<String> sharedWithQueue) {
+    public User(String username, String password, String email, List<Long> favoritePatternsIds, Queue<String> sharedWithQueue, List<Pattern> ownedPatterns) {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.favoritePatterns = favoritePatterns;
+        this.favoritePatternsIds = favoritePatternsIds;
         this.sharedWithQueue = sharedWithQueue;
+        this.ownedPatterns = ownedPatterns;
     }
 
     public Long getID() {
@@ -58,12 +68,12 @@ public class User {
         this.email = email;
     }
 
-    public List<Pattern> getFavoritePatterns() {
-        return favoritePatterns;
+    public List<Long> getFavoritePatternsIds() {
+        return favoritePatternsIds;
     }
 
-    public void setFavoritePatterns(List<Pattern> favoritePatterns) {
-        this.favoritePatterns = favoritePatterns;
+    public void setFavoritePatternsIds(List<Long> favoritePatternsIds) {
+        this.favoritePatternsIds = favoritePatternsIds;
     }
 
     public Queue<String> getSharedWithQueue() {
@@ -72,5 +82,13 @@ public class User {
 
     public void setSharedWithQueue(Queue<String> sharedWithQueue) {
         this.sharedWithQueue = sharedWithQueue;
+    }
+
+    public List<Pattern> getOwnedPatterns() {
+        return ownedPatterns;
+    }
+
+    public void setOwnedPatterns(List<Pattern> ownedPatterns) {
+        this.ownedPatterns = ownedPatterns;
     }
 }
