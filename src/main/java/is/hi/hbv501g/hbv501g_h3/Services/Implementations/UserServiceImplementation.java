@@ -44,4 +44,9 @@ public class UserServiceImplementation implements UserService {
         return userRepository.findByUsername(username);
     }
 
+    @Override
+    public User login(String username, String password){
+
+    }
+
 }
