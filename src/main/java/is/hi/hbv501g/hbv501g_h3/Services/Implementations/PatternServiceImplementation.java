@@ -10,6 +10,7 @@ import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.Pattern;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class PatternServiceImplementation implements PatternService {
@@ -37,8 +38,6 @@ public class PatternServiceImplementation implements PatternService {
         return pattern;
     }
 
-
-
     @Override
     public Pattern save(Pattern pattern){
         return patternRepository.save(pattern);
@@ -48,4 +47,17 @@ public class PatternServiceImplementation implements PatternService {
     public void delete(Pattern pattern){
         patternRepository.delete(pattern);
     }
+
+    @Override
+    public boolean changePatternName(Long ID, Long ownerID, String newName) {
+        Pattern pattern = patternRepository.findByIDAndOwnerID(ID,ownerID).orElse(null);
+        if(pattern != null){
+            pattern.setName(newName);
+            pattern.setModificationDate(new Date());
+            patternRepository.save(pattern);
+            return true;
+        }
+        return false;
+    }
+
 }

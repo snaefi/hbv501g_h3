@@ -9,4 +9,5 @@ public interface PatternService {
     Pattern findById(Long ID);
     Pattern save(Pattern pattern);
     void delete(Pattern pattern);
+    boolean changePatternName(Long ID, Long ownerID, String newName);
 }
