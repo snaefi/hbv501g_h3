@@ -4,6 +4,10 @@ package is.hi.hbv501g.hbv501g_h3.Services.Implementations;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Repositories.PatternRepository;
 import is.hi.hbv501g.hbv501g_h3.Services.PatternService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.Pattern;
 
@@ -22,13 +26,52 @@ public class PatternServiceImplementation implements PatternService {
     }
 
     @Override
-    public List<Pattern> findByName(String name){
-        return patternRepository.findByName(name);
+    public Page<Pattern> findByNamePaginated(String name, int page, int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return patternRepository.findByName(name, pageable);
+    }
+
+
+    @Override
+    public Page<Pattern> findAllPatternsPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return patternRepository.findAll(pageable);
     }
 
     @Override
-    public List<Pattern> findAll(){
-        return patternRepository.findAll();
+    public Page<Pattern> findPublicPatternsPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return patternRepository.findByIsPublicTrue(pageable);
+    }
+
+    @Override
+    public  Page<Pattern> findPublicPatternsPaginatedSortedByName(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
+        return patternRepository.findByIsPublicTrue(pageable);
+    }
+
+    @Override
+    public Page<Pattern> findPublicPatternsPaginatedSortedByDate(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date"));
+        return patternRepository.findByIsPublicTrue(pageable);
+    }
+
+    @Override
+    public Page<Pattern> findPrivatePatternsPaginated(Long ownerID, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return patternRepository.findByOwnerIDAndIsPublicFalse(ownerID, pageable);
+    }
+
+    @Override
+    public Page<Pattern> findPrivatePatternsPaginatedSortedByName(Long ownerID, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name"));
+        return patternRepository.findByOwnerIDAndIsPublicFalse(ownerID, pageable);
+    }
+
+    @Override
+    public Page<Pattern> findPrivatePatternsPaginatedSortedByDate(Long ownerID, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date"));
+        return patternRepository.findByOwnerIDAndIsPublicFalse(ownerID, pageable);
     }
 
     @Override
