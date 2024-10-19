@@ -10,5 +10,6 @@ public interface UserService {
 
     List<User> findAll();
     User findById(Long ID);
-    List<User> findByUsername(String username);
+    User findByUsername(String username);
+    User login(User user);
 }

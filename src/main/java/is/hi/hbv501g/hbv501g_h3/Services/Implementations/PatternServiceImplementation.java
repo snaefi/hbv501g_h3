@@ -57,6 +57,12 @@ public class PatternServiceImplementation implements PatternService {
     }
 
     @Override
+    public Page<Pattern> findPublicPatternsByUsername(String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return patternRepository.findByOwnerUsernameContainingAndIsPublicTrue(username,pageable);
+    }
+
+    @Override
     public Page<Pattern> findPrivatePatternsPaginated(Long ownerID, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return patternRepository.findByOwnerIDAndIsPublicFalse(ownerID, pageable);
