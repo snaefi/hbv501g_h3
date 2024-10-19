@@ -1,11 +1,20 @@
 package is.hi.hbv501g.hbv501g_h3.Services;
 
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.Pattern;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface PatternService {
-    List<Pattern> findByName(String name);
-    List<Pattern> findAll();
+    Page<Pattern> findByNamePaginated(String name, int page, int size);
+    Page<Pattern> findAllPatternsPaginated(int page, int size);
+    Page<Pattern> findPublicPatternsPaginated(int page, int size);
+    Page<Pattern> findPublicPatternsPaginatedSortedByName(int page, int size);
+    Page<Pattern> findPublicPatternsPaginatedSortedByDate(int page, int size);
+    Page<Pattern> findPrivatePatternsPaginated(Long ownerID, int page, int size);
+    Page<Pattern> findPrivatePatternsPaginatedSortedByName(Long ownerID, int page, int size);
+    Page<Pattern> findPrivatePatternsPaginatedSortedByDate(Long ownerID, int page, int size);
     Pattern findById(Long ID);
     Pattern save(Pattern pattern);
     void delete(Pattern pattern);

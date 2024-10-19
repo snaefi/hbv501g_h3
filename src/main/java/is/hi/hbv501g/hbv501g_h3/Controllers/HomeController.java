@@ -1,5 +1,6 @@
 package is.hi.hbv501g.hbv501g_h3.Controllers;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -30,7 +31,7 @@ public class HomeController {
     @RequestMapping("/")
     public String homePage(Model model) {
         //Call a method in a Service Class
-        model.addAttribute("patterns",patternService.findAll());
+        model.addAttribute("patterns",patternService.findAllPatternsPaginated(0,5));
         model.addAttribute("users",userService.findAll());
         //Add some data to the model
         return "home";
@@ -56,8 +57,8 @@ public class HomeController {
                 return errorResponse;
             }
         } else {
-            List<Pattern> allPatterns = patternService.findAll();
-            return allPatterns;
+            Page<Pattern> allPatternsPage = patternService.findAllPatternsPaginated(0,5);
+            return allPatternsPage;
         }
     }
 
