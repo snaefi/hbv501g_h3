@@ -17,4 +17,5 @@ public interface PatternRepository extends JpaRepository<Pattern, Long> {
     Optional<Pattern> findByIDAndOwnerID(long ID, long ownerID);
     Page<Pattern> findByIsPublicTrue(Pageable pageable);
     Page<Pattern> findByOwnerIDAndIsPublicFalse(Long ownerID, Pageable pageable);
+    Page<Pattern> findByOwnerUsernameContainingAndIsPublicTrue(String username,Pageable pageable);
 }

@@ -12,6 +12,7 @@ public interface PatternService {
     Page<Pattern> findPublicPatternsPaginated(int page, int size);
     Page<Pattern> findPublicPatternsPaginatedSortedByName(int page, int size);
     Page<Pattern> findPublicPatternsPaginatedSortedByDate(int page, int size);
+    Page<Pattern> findPublicPatternsByUsername(String username, int page, int size); //if username contains username
     Page<Pattern> findPrivatePatternsPaginated(Long ownerID, int page, int size);
     Page<Pattern> findPrivatePatternsPaginatedSortedByName(Long ownerID, int page, int size);
     Page<Pattern> findPrivatePatternsPaginatedSortedByDate(Long ownerID, int page, int size);
