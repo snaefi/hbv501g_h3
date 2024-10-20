@@ -1,0 +1,82 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"properties": {
+	  "username": {
+		"type": "string",
+		"minLength": 1,
+		"description": "Username is mandatory"
+	  },
+	  "password": {
+		"type": "string",
+		"minLength": 6,
+		"description": "Password must be at least 6 characters long"
+	  },
+	  "email": {
+		"type": "string",
+		"format": "email",
+		"description": "Email must be valid"
+	  },
+	  "favoritePatternsIds": {
+		"type": "array",
+		"items": {
+		  "type": "integer"
+		},
+		"description": "A list of favorite pattern IDs (integers)"
+	  },
+	  "sharedWithQueue": {
+		"type": "array",
+		"items": {
+		  "type": "string"
+		},
+		"description": "A list of usernames with whom the user has shared patterns"
+	  },
+	  "ownedPatterns": {
+		"type": "array",
+		"items": {
+		  "type": "object",
+		  "properties": {
+			"id": {
+			  "type": "integer",
+			  "description": "ID of the pattern"
+			},
+			"name": {
+			  "type": "string",
+			  "description": "Name of the pattern"
+			},
+			"creationDate": {
+			  "type": "string",
+			  "format": "date-time",
+			  "description": "Creation date of the pattern"
+			},
+			"modificationDate": {
+			  "type": "string",
+			  "format": "date-time",
+			  "description": "Last modification date of the pattern"
+			},
+			"isPublic": {
+			  "type": "boolean",
+			  "description": "Whether the pattern is public"
+			},
+			"numberOfColors": {
+			  "type": "integer",
+			  "description": "Number of colors in the pattern"
+			},
+			"rows": {
+			  "type": "integer",
+			  "description": "Number of rows in the pattern"
+			},
+			"stitches": {
+			  "type": "integer",
+			  "description": "Number of stitches in the pattern"
+			}
+		  },
+		  "required": ["id", "name"]
+		},
+		"description": "A list of owned patterns"
+	  }
+	},
+	"required": ["username", "password", "email"],
+	"additionalProperties": false
+  }
+  

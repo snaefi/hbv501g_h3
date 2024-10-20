@@ -6,28 +6,50 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id") // Tell JPA to map this field to the column 'id'
     private Long ID;
+
+    @NotNull(message = "Username is mandatory")
+    @NotBlank(message = "Username cannot be blank")
     private String username;
+
+	@NotNull(message = "Password is mandatory")
+    @NotBlank(message = "Password is mandatory")
+    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
+
+
+	@NotNull(message = "Email is mandatory")
+    @NotBlank(message = "Email is mandatory")
+    @Email(message = "Email should be valid")
     private String email;
+
     @ElementCollection
     private List<Long> favoritePatternsIds;
+
     @ElementCollection
-    private Queue<String> sharedWithQueue;
+    private List<String> sharedWithQueue;
+
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Pattern> ownedPatterns = new ArrayList<>();
 
     public User() {
     }
 
-    public User(String username, String password, String email, List<Long> favoritePatternsIds, Queue<String> sharedWithQueue, List<Pattern> ownedPatterns) {
+    public User(String username, String password, String email, List<Long> favoritePatternsIds, List<String> sharedWithQueue, List<Pattern> ownedPatterns) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -76,11 +98,11 @@ public class User {
         this.favoritePatternsIds = favoritePatternsIds;
     }
 
-    public Queue<String> getSharedWithQueue() {
+    public List<String> getSharedWithQueue() {
         return sharedWithQueue;
     }
 
-    public void setSharedWithQueue(Queue<String> sharedWithQueue) {
+    public void setSharedWithQueue(List<String> sharedWithQueue) {
         this.sharedWithQueue = sharedWithQueue;
     }
 

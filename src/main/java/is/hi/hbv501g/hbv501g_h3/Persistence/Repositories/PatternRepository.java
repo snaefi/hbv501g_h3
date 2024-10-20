@@ -18,4 +18,16 @@ public interface PatternRepository extends JpaRepository<Pattern, Long> {
     Page<Pattern> findByIsPublicTrue(Pageable pageable);
     Page<Pattern> findByOwnerIDAndIsPublicFalse(Long ownerID, Pageable pageable);
     Page<Pattern> findByOwnerUsernameContainingAndIsPublicTrue(String username,Pageable pageable);
+
+	    // Search patterns by name (case-insensitive) and public status
+		Page<Pattern> findByIsPublicAndNameContainingIgnoreCase(Boolean isPublic, String name, Pageable pageable);
+
+		// Find patterns by owner ID and public status
+		Page<Pattern> findByOwner_IDAndIsPublic(Long ownerId, Boolean isPublic, Pageable pageable);
+	
+		// Find patterns by owner ID, public status, and name
+		Page<Pattern> findByOwner_IDAndIsPublicAndNameContainingIgnoreCase(Long ownerID, Boolean isPublic, String name, Pageable pageable);
+	
+		// Optional: Find patterns by public status only
+		Page<Pattern> findByIsPublic(Boolean isPublic, Pageable pageable);
 }

@@ -42,12 +42,6 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-		<!-- Thymeleaf -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-
 		<!-- Spring Data JPA -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -75,6 +69,50 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Postgesql -->
+<!-- <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency> -->
+
+		<dependency>
+    <groupId>org.hibernate.validator</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>8.0.0.Final</version> <!-- Check for the latest version -->
+</dependency>
+
+<dependency>
+    <groupId>javax.validation</groupId>
+    <artifactId>validation-api</artifactId>
+    <version>2.0.1.Final</version>
+</dependency>
+<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+            <version>3.3.4</version>
+</dependency>
+
+<!-- Optional: For better logging and debugging -->
+<dependency>
+    <groupId>org.glassfish</groupId>
+    <artifactId>javax.el</artifactId>
+    <version>3.0.0</version>
+</dependency>
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <version>42.7.4</version>
+</dependency>
+<dependency>
+    <groupId>com.networknt</groupId>
+    <artifactId>json-schema-validator</artifactId>
+    <version>1.0.75</version>
+</dependency>
+<dependency>
+  <groupId>com.smattme</groupId>
+  <artifactId>request-validator</artifactId>
+  <version>0.0.2</version>
+</dependency>
 
 		<!-- Restful -->
 		<dependency>

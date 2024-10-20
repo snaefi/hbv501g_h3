@@ -1,33 +1,55 @@
 package is.hi.hbv501g.hbv501g_h3.Persistence.Entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import java.util.Date;
 
 @Entity
 @Table(name="patterns")
 public class Pattern {
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "id") // Tell JPA to map this field to the column 'id'
-    private Long ID;
-    //private Long ownerID;
-    private String name;
-    @ElementCollection
-    private List<Integer> patternMatrix;
-    private Integer rows;
-    private Integer stitches;
-    private Integer numberOfColors;
-    @ElementCollection
-    private List<String> colorScheme;
-    private Date creationDate;
-    private Date modificationDate;
-    private Boolean isPublic;
-    @ManyToOne
-    @JoinColumn(name="user_id")
-    private User owner;
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long ID;
+
+    @NotNull(message = "Name is required")
+    @NotBlank(message = "Name cannot be blank")
+    private String name;
+
+    @ElementCollection
+    @NotNull(message = "Pattern matrix is required")
+    private List<Integer> patternMatrix;
+
+    @Min(value = 1, message = "Rows must be at least 1")
+    private Integer rows;
+
+    @Min(value = 1, message = "Stitches must be at least 1")
+    private Integer stitches;
+
+    @Min(value = 1, message = "There must be at least 1 color")
+    private Integer numberOfColors;
+
+    @ElementCollection
+    @NotNull(message = "Color scheme is required")
+    private List<String> colorScheme;
+
+    private Date creationDate = new Date();
+    private Date modificationDate;
+
+    private Boolean isPublic = true;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference // Prevents serialization of the owner reference
+    private User owner;
 
     public Pattern() {
     }
@@ -44,7 +66,6 @@ public class Pattern {
         this.isPublic = isPublic;
         this.owner = owner;
     }
-
     public Long getID() {
         return ID;
     }
