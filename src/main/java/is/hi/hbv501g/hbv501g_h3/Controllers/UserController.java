@@ -108,6 +108,12 @@ public class UserController {
     public User patchUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return userService.patchUser(id, updates);
     }
+
+	@DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteById(id);
+        return ResponseEntity.noContent().build(); // 204 No Content if deletion is successful
+    }
 	
 	}
 	

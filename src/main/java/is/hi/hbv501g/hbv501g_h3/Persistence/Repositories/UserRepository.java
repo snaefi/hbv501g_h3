@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User save(User user);
-    void delete(User user);
+    void deleteById(Long id);
 
 	Page<User> findAll(Pageable pageable);
 	Page<User> findByUsernameContainingIgnoreCase(String username, Pageable pageable);

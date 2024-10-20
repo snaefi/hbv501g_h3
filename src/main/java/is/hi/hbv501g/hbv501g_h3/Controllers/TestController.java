@@ -36,23 +36,6 @@ public class TestController {
 
 	    @GetMapping("/")
     public Object homePage(Model model) {
-    //    Map<String, Object> response = new HashMap<>();
-
-        // Return the map wrapped in a ResponseEntity, which Spring Boot will serialize to JSON
         return ResponseEntity.ok(Map.of("test",1,"message","hello"));
     }
-
-
-	// @GetMapping(value = "/users", produces = "application/json")
-    // @ResponseBody
-    // public Page<User> getUsers(
-	// 	@RequestParam(value = "id", required = false) Long ID,
-	// 	@RequestParam(defaultValue = "0") int page,
-	// 	@RequestParam(defaultValue = "10") int size
-	// 	) {
-
-    //         // Page<User> allUsers = userService.findAll(page, size);
-    //         // return allUsers;
-    //     }
-
 }

@@ -34,7 +34,7 @@ public class Pattern {
     @Min(value = 1, message = "Stitches must be at least 1")
     private Integer stitches;
 
-    @Min(value = 1, message = "There must be at least 1 color")
+    @Min(value = 2, message = "There must be at least 1 color")
     private Integer numberOfColors;
 
     @ElementCollection

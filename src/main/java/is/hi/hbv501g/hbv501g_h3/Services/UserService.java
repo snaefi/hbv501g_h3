@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface UserService {
     User save(User user);
-    void delete(Long id);
+    void deleteById(Long id);
 	Page<User> findAll(Pageable pageable);
     User findById(Long ID);
     User findByUsername(String username);

@@ -129,7 +129,7 @@ public class PatternServiceImplementation implements PatternService {
         return patternRepository.save(pattern); // Save the updated pattern
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         Optional<Pattern> pattern = patternRepository.findById(id);
         if (pattern.isEmpty()) {
             throw new NoSuchElementException("Pattern with id " + id + " not found");

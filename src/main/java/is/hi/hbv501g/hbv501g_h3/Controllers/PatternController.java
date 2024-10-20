@@ -92,7 +92,7 @@ public ResponseEntity<?> getPatterns(
 
 	@DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePattern(@PathVariable Long id) {
-        patternService.delete(id);
+        patternService.deleteById(id);
         return ResponseEntity.noContent().build(); // 204 No Content if deletion is successful
     }
     

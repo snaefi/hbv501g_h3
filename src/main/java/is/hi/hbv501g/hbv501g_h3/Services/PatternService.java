@@ -21,7 +21,7 @@ public interface PatternService {
 	Page<Pattern> findPatterns(Long ownerId, String searchTerm, Boolean isPublic, Pageable pageable);
     Pattern findById(Long ID);
     Pattern save(Pattern pattern);
-    void delete(Long ID);
+    void deleteById(Long ID);
     boolean updatePattern(Long ID, Long ownerID,
                           List<Integer> newPatternMatrix,
                           List<String> newColorScheme,

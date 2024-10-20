@@ -87,13 +87,13 @@ public class UserServiceImplementation implements UserService {
 		return userRepository.save(user);
 	}
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
 		Optional<User> existingUser = userRepository.findById(id);
 		if (existingUser.isEmpty()) {
 			throw new NoSuchElementException("User with id " + id + " not found");
 		}
-		User user = existingUser.get();
-        userRepository.delete(user);
+		// User user = existingUser.get();
+        userRepository.deleteById(id);
     }
 
     @Override
