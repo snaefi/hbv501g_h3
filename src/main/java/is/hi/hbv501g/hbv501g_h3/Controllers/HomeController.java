@@ -33,6 +33,7 @@ public class HomeController {
         this.patternService = patternService;
         this.userService = userService;
     }
+	@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("")
     public ResponseEntity<Map<String, Object>> getRootLinks() {
         Map<String, Object> rootResource = new HashMap<>();

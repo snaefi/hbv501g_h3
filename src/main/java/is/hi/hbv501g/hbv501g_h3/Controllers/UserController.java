@@ -53,6 +53,7 @@ public class UserController {
         this.userService = userService;
     }
 
+	@CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/{id}")
     public EntityModel<User> getUserById(@PathVariable long id) {
         User user = userService.findById(id);
@@ -64,6 +65,7 @@ public class UserController {
         return userModel;
     }
 
+	@CrossOrigin(origins = "http://localhost:3000")
 	@GetMapping("")
 	public PagedModel<EntityModel<User>> getAllUsers(
 			@RequestParam(value = "search", required = false) String searchTerm,
@@ -88,7 +90,7 @@ public class UserController {
 	}
 	
 
-
+	@CrossOrigin(origins = "http://localhost:3000")
     @PostMapping
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user, BindingResult bindingResult) {
         // Check for validation errors
@@ -103,12 +105,12 @@ public class UserController {
         User savedUser = userService.save(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
-
+	@CrossOrigin(origins = "http://localhost:3000")
 	    @PatchMapping("/{id}")
     public User patchUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
         return userService.patchUser(id, updates);
     }
-
+	@CrossOrigin(origins = "http://localhost:3000")
 	@DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
