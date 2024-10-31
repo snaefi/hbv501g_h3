@@ -7,6 +7,7 @@ import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,6 +18,8 @@ public class UserServiceImplementation implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Optional<User> getUserById(Long id) {
@@ -31,6 +34,9 @@ public class UserServiceImplementation implements UserService {
     @Override
     public User createUser(User user) {
         try {
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+
             return userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             throw new ApiExceptions.UserAlreadyExists();
@@ -44,6 +50,17 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public User updateUser(User user) {
+        if (user.getPassword() != null) {
+            // Hash the new password before saving
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPassword);
+        }
+
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

@@ -28,9 +28,21 @@ public class ApiExceptions {
             super("User not found with id: " + id, HttpStatus.NOT_FOUND);
         }
     }
+
+    public static class UsernameNotFoundException extends ApiException {
+        public UsernameNotFoundException(String username) {
+            super("User not found with username: " + username, HttpStatus.NOT_FOUND);
+        }
+    }
+
     public static class UserAlreadyExists extends ApiException {
         public UserAlreadyExists() {
             super("User with that username already exists.", HttpStatus.BAD_REQUEST);
+        }
+    }
+    public static class InvalidCredentialsException extends ApiException {
+        public InvalidCredentialsException() {
+            super("Invalid username or password", HttpStatus.UNAUTHORIZED);
         }
     }
 }

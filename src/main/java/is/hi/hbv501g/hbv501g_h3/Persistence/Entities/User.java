@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +26,7 @@ public class User {
 
     @Pattern(
             regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$",
-            message = "Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character (@#$%^&+=), and be at least 8 characters long"
+            message = "Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character (@#$%^&+=!), and be at least 8 characters long"
     )
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Hides password from response objects
     private String password;

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 @RestController
 public class HomeController {
 
-    // Define the API descriptions for "patterns" endpoints
     private List<EndpointInfo> getPatternEndpoints() {
         List<EndpointInfo> patternEndpoints = new ArrayList<>();
         patternEndpoints.add(new EndpointInfo("/patterns", "GET", "Get a list of patterns or search/filter by public status, title, or username."));
@@ -21,7 +20,6 @@ public class HomeController {
         return patternEndpoints;
     }
 
-    // Define the API descriptions for "users" endpoints
     private List<EndpointInfo> getUserEndpoints() {
         List<EndpointInfo> userEndpoints = new ArrayList<>();
         userEndpoints.add(new EndpointInfo("/users", "GET", "Get a list of users or search by username."));
@@ -32,7 +30,6 @@ public class HomeController {
         return userEndpoints;
     }
 
-    // The API description with grouped endpoints
     @GetMapping("/")
     public Map<String, List<EndpointInfo>> apiDescription() {
         return Map.of(
@@ -41,7 +38,6 @@ public class HomeController {
         );
     }
 
-    // A simple helper class to describe each endpoint
     public static class EndpointInfo {
         private String endpoint;
         private String method;
