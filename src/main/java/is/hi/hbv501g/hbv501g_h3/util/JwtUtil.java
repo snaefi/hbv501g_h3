@@ -7,6 +7,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
@@ -68,5 +69,25 @@ public class JwtUtil {
         final String username = extractUsername(token);
         final Long userId = extractUserId(token);
         return (username.equals(user.getUsername()) && userId.equals(user.getId()) && !isTokenExpired(token));
+    }
+
+    public Optional<User> getUserFromToken(String token) {
+        if (isTokenExpired(token)) {
+            return Optional.empty(); // Token is expired
+        }
+
+        try {
+            Claims claims = extractAllClaims(token);
+            Long userId = claims.get("id", Long.class);
+            String username = claims.getSubject(); // username as subject
+
+            User user = new User();
+            user.setId(userId);
+            user.setUsername(username);
+
+            return Optional.of(user);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 }

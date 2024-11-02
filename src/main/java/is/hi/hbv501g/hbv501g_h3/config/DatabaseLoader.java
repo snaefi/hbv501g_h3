@@ -21,6 +21,15 @@ public class DatabaseLoader {
             patternRepository.save(new KnittingPattern("Pattern1", true, "121212,121212,121212", arounr));
             patternRepository.save(new KnittingPattern("testPattern", false, "121212,121212,121212", arounr));
             patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
+            patternRepository.save(new KnittingPattern("testPattern2", true, "121212,121212,121212", arounr));
             patternRepository.save(new KnittingPattern("AAAA", false, "121212,121212,121212", user1));
 
             System.out.println("Database initialized with users and patterns.");

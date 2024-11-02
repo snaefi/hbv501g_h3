@@ -40,9 +40,16 @@ public class ApiExceptions {
             super("User with that username already exists.", HttpStatus.BAD_REQUEST);
         }
     }
+
     public static class InvalidCredentialsException extends ApiException {
         public InvalidCredentialsException() {
             super("Invalid username or password", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public static class InvalidTokenException extends ApiException {
+        public InvalidTokenException() {
+            super("Invalid or expired token", HttpStatus.UNAUTHORIZED);
         }
     }
 }

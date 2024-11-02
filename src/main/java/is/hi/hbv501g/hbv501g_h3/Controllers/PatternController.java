@@ -33,7 +33,7 @@ public class PatternController {
 
     @GetMapping
     public Page<KnittingPattern> getAllPatterns(
-            @RequestParam(value = "public", required = false) Boolean isPublic,
+            //@RequestParam(value = "public", required = false) Boolean isPublic,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "sort", required = false, defaultValue = "id") String sortBy,
@@ -43,7 +43,7 @@ public class PatternController {
         Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
 
-        return patternService.getPatterns(isPublic, title, username, sortedPageable);
+        return patternService.getPatterns(true, title, username, sortedPageable); // only get public patterns
     }
 
     // Endpoint to get a Pattern by ID

@@ -35,4 +35,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         // Step 3: Generate a JWT token for the user
         return jwtUtil.generateToken(user);
     }
+
+    public User getProfile(String token) {
+        return jwtUtil.getUserFromToken(token)
+                .orElseThrow(ApiExceptions.InvalidTokenException::new);
+    }
 }
