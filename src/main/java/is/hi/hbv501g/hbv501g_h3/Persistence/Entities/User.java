@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,6 +35,12 @@ public class User {
     // One user can have many patterns
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<KnittingPattern> knittingPatterns;
+
+    @ElementCollection
+    @CollectionTable(name = "user_liked_patterns", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "pattern_id")
+    private List<Long> likedPatternIds = new ArrayList<>();
+
 
     public User() {
     }
@@ -66,5 +73,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean likePattern(Long patternId) {
+        if (!likedPatternIds.contains(patternId)) {
+            likedPatternIds.add(patternId);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean unlikePattern(Long patternId) {
+        return likedPatternIds.remove(patternId);
+    }
+
+    public boolean hasLikedPattern(Long patternId) {
+        return likedPatternIds.contains(patternId);
     }
 }

@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE (:username IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :username, '%')))")
     Page<User> searchUsers(String username, Pageable pageable);
 
-    Optional<User> findByUsername(String username);
+    @Query("SELECT COUNT(u) FROM User u WHERE :patternId MEMBER OF u.likedPatternIds")
+    Long countLikesForPattern(Long patternId);
 
+    Optional<User> findByUsername(String username);
 }

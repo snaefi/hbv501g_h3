@@ -11,10 +11,15 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
+import is.hi.hbv501g.hbv501g_h3.Persistence.Repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
+
+    @Autowired
+    private UserRepository userRepository;
 
     // secret key (ensure it's at least 32 characters long for HS256)
     private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor("your-very-secret-key-that-is-at-least-32-characters-long".getBytes());
@@ -79,15 +84,11 @@ public class JwtUtil {
         try {
             Claims claims = extractAllClaims(token);
             Long userId = claims.get("id", Long.class);
-            String username = claims.getSubject(); // username as subject
 
-            User user = new User();
-            user.setId(userId);
-            user.setUsername(username);
-
-            return Optional.of(user);
+            return userRepository.findById(userId);
         } catch (Exception e) {
             return Optional.empty();
         }
     }
+
 }

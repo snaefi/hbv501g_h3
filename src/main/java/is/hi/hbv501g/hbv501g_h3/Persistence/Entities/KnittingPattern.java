@@ -31,6 +31,9 @@ public class KnittingPattern {
     private Date creationDate = new Date();
     private Date modificationDate = new Date();
 
+    private int likeCount = 0;
+    private String imageUrl;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @NotNull(message = "An owner (user) must be specified.")
@@ -44,6 +47,9 @@ public class KnittingPattern {
         this.isPublic = isPublic;
         this.patternMatrix = patternMatrix;
         this.owner = owner;
+
+        // Generate a small thumbnail image based on patternMatrix
+        this.imageUrl = "https://i.ibb.co/2SqbkTm/pixil-frame-0.png"; // for testing
     }
 
     // Getters and Setters
@@ -103,9 +109,31 @@ public class KnittingPattern {
         this.patternMatrix = patternMatrix;
     }
 
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount > 0) {
+            this.likeCount--;
+        }
+    }
+
     // Custom getter to return the owner's username
     @JsonProperty("ownerUsername")
     public String getOwnerUsername() {
         return owner != null ? owner.getUsername() : null;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

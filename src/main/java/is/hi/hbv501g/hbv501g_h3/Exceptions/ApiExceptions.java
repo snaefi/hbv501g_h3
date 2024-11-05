@@ -52,4 +52,16 @@ public class ApiExceptions {
             super("Invalid or expired token", HttpStatus.UNAUTHORIZED);
         }
     }
+
+    public static class UserAlreadyLikedPatternException extends ApiException {
+        public UserAlreadyLikedPatternException(Long userId, Long patternId) {
+            super("User with id " + userId + " has already liked the pattern with id: " + patternId, HttpStatus.CONFLICT);
+        }
+    }
+
+    public static class UserInvalidAccess extends ApiException {
+        public UserInvalidAccess(String message) {
+            super(message, HttpStatus.UNAUTHORIZED);
+        }
+    }
 }
