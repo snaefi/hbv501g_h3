@@ -2,12 +2,14 @@ package is.hi.hbv501g.hbv501g_h3.Persistence.Entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import is.hi.hbv501g.hbv501g_h3.util.ConsistentRowLength;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "patterns")
@@ -25,31 +27,38 @@ public class KnittingPattern {
     @NotNull(message = "The public status must be specified")
     private Boolean isPublic;
 
+    @ElementCollection
     @NotEmpty(message = "Pattern matrix is required")
-    private String patternMatrix;
+    @ConsistentRowLength
+    private List<String> patternMatrix;
+
+    @ElementCollection
+    @NotEmpty(message = "Color codes cant be empty")
+    private List<String> colorCodes;
 
     private Date creationDate = new Date();
     private Date modificationDate = new Date();
 
     private int likeCount = 0;
+
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @NotNull(message = "An owner (user) must be specified.")
+    //@NotNull(message = "An owner (user) must be specified.")
     private User owner;
 
     public KnittingPattern() {
     }
 
-    public KnittingPattern(String title, Boolean isPublic, String patternMatrix, User owner) {
+    public KnittingPattern(String title, Boolean isPublic, List<String> patternMatrix, User owner) {
         this.title = title;
         this.isPublic = isPublic;
         this.patternMatrix = patternMatrix;
         this.owner = owner;
 
-        // Generate a small thumbnail image based on patternMatrix
-        this.imageUrl = "https://i.ibb.co/2SqbkTm/pixil-frame-0.png"; // for testing
+        this.imageUrl = "https://i.ibb.co/ScdWZ38/5x5.png"; // 5x5 test pattern as default for now
+        this.colorCodes = List.of("#3A9AD9", "#FF6347", "#7FFF00"); // default color for now
     }
 
     // Getters and Setters
@@ -101,14 +110,6 @@ public class KnittingPattern {
         this.owner = owner;
     }
 
-    public @NotEmpty(message = "Pattern matrix is required") String getPatternMatrix() {
-        return patternMatrix;
-    }
-
-    public void setPatternMatrix(@NotEmpty(message = "Pattern matrix is required") String patternMatrix) {
-        this.patternMatrix = patternMatrix;
-    }
-
     public int getLikeCount() {
         return likeCount;
     }
@@ -135,5 +136,21 @@ public class KnittingPattern {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public @NotEmpty(message = "Pattern matrix is required") List<String> getPatternMatrix() {
+        return patternMatrix;
+    }
+
+    public void setPatternMatrix(@NotEmpty(message = "Pattern matrix is required") List<String> patternMatrix) {
+        this.patternMatrix = patternMatrix;
+    }
+
+    public @NotEmpty(message = "Color codes cant be empty") List<String> getColorCodes() {
+        return colorCodes;
+    }
+
+    public void setColorCodes(@NotEmpty(message = "Color codes cant be empty") List<String> colorCodes) {
+        this.colorCodes = colorCodes;
     }
 }

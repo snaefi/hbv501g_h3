@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -60,7 +63,7 @@ public class PatternController {
     }
 
     // Private patterns of the authenticated user
-    @GetMapping("/user/private")
+    @GetMapping("/private")
     public Page<KnittingPattern> getUserPrivatePatterns(
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @RequestParam(value = "title", required = false) String title,
@@ -76,7 +79,7 @@ public class PatternController {
         User user = authenticationService.getProfile(token);
 
         // Call getAllPatterns with isPublic = false and the authenticated user's username
-        return getAllPatterns(false, title, user.getUsername(), sortBy, direction, pageable);
+        return getAllPatterns(null, title, user.getUsername(), sortBy, direction, pageable);
     }
 
     // Endpoint to get a Pattern by ID
@@ -112,13 +115,25 @@ public class PatternController {
     // Create pattern
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public KnittingPattern createPattern(@Valid @RequestBody KnittingPattern knittingPattern) {
-        // Verify if the user exists and assign the owner to the pattern (owner will later be assigned via token from user)
-        User owner = userService.getUserById(knittingPattern.getOwner().getId())
-                .orElseThrow(() -> new ApiExceptions.UserNotFoundException(knittingPattern.getOwner().getId()));
+    public KnittingPattern createPattern(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @Valid @RequestBody KnittingPattern knittingPattern) {
 
+        // Validate Authorization header
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        // Extract token and get user profile
+        String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        User owner = authenticationService.getProfile(token);
+
+        // Generate image URL based on the pattern
+        String imageURL = patternService.generateImageURL(knittingPattern);
+        knittingPattern.setImageUrl(imageURL);
         knittingPattern.setOwner(owner);
 
+        // Save and return the created pattern
         return patternService.savePattern(knittingPattern);
     }
 
@@ -166,7 +181,9 @@ public class PatternController {
                     existingPattern.setIsPublic((Boolean) value);
                     break;
                 case "patternMatrix":
-                    existingPattern.setPatternMatrix((String) value);
+                    @SuppressWarnings("unchecked")
+                    List<String> patternMatrix = (List<String>) value;
+                    existingPattern.setPatternMatrix(patternMatrix);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid field: " + field);

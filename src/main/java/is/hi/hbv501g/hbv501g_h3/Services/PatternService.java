@@ -5,6 +5,8 @@ import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
 
 public interface PatternService {
@@ -12,6 +14,7 @@ public interface PatternService {
     KnittingPattern savePattern(KnittingPattern pattern);
     Page<KnittingPattern> getPatterns(Boolean isPublic, String title, String username, Pageable pageable);
     KnittingPattern updatePattern(KnittingPattern knittingPattern);
+    String generateImageURL(KnittingPattern pattern);
     void likePattern(User user, KnittingPattern pattern);
     void unlikePattern(User user, KnittingPattern pattern);
     void deletePattern(Long id);

@@ -90,4 +90,8 @@ public class User {
     public boolean hasLikedPattern(Long patternId) {
         return likedPatternIds.contains(patternId);
     }
+
+    public List<Long> getLikedPatternIds() {
+        return likedPatternIds;
+    }
 }
