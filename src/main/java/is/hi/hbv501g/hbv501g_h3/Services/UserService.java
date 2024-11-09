@@ -4,6 +4,7 @@ import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.IOException;
 import java.util.Optional;
 
 public interface UserService {
@@ -12,5 +13,6 @@ public interface UserService {
     User createUser(User user);
     void deleteUser(Long id);
     User updateUser(User user);
+    void uploadProfileImage(User user, byte[] imageBytes) throws IOException;
     Optional<User> findByUsername(String username);
 }

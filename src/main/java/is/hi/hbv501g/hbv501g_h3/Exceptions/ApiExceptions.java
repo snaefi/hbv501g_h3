@@ -53,15 +53,15 @@ public class ApiExceptions {
         }
     }
 
-    public static class UserAlreadyLikedPatternException extends ApiException {
-        public UserAlreadyLikedPatternException(Long userId, Long patternId) {
-            super("User with id " + userId + " has already liked the pattern with id: " + patternId, HttpStatus.CONFLICT);
-        }
-    }
-
     public static class UserInvalidAccess extends ApiException {
         public UserInvalidAccess(String message) {
             super(message, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public static class ProfilePictureUploadException extends ApiException {
+        public ProfilePictureUploadException() {
+            super("Failed to upload profile picture", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

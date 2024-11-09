@@ -41,6 +41,7 @@ public class User {
     @Column(name = "pattern_id")
     private List<Long> likedPatternIds = new ArrayList<>();
 
+    private String profilePicture;
 
     public User() {
     }
@@ -93,5 +94,13 @@ public class User {
 
     public List<Long> getLikedPatternIds() {
         return likedPatternIds;
+    }
+
+    public String getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(String profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }
