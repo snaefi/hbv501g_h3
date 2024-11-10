@@ -1,7 +1,9 @@
 package is.hi.hbv501g.hbv501g_h3.Controllers;
 
 import is.hi.hbv501g.hbv501g_h3.Exceptions.ApiExceptions;
+import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.KnittingPattern;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
+import is.hi.hbv501g.hbv501g_h3.Services.PatternService;
 import is.hi.hbv501g.hbv501g_h3.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -19,6 +23,9 @@ import java.util.Map;
 public class UserController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    PatternService patternService;
 
     // Endpoint to get a User by ID
     @GetMapping("/{id}")
@@ -33,6 +40,21 @@ public class UserController {
             @PageableDefault(size = 8) Pageable pageable
     ) {
         return userService.getAllUsers(username, pageable);
+    }
+
+    @GetMapping("/{id}/likedPatterns")
+    public List<KnittingPattern> getLikedPatternIds(@PathVariable Long id) {
+        User user = userService.getUserById(id)
+                .orElseThrow(() -> new ApiExceptions.UserNotFoundException(id));
+
+        List<Long> likedPatternIds = user.getLikedPatternIds();
+        List<KnittingPattern> likedPatterns = new ArrayList<>();
+
+        for (Long likedPatternId : likedPatternIds) {
+            likedPatterns.add(patternService.getPatternById(likedPatternId)
+                    .orElseThrow(() -> new ApiExceptions.PatternNotFoundException(likedPatternId)));
+        }
+        return likedPatterns;
     }
 
     // Create a new user

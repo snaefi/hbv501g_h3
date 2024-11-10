@@ -27,6 +27,7 @@ public class HomeController {
         userEndpoints.add(new EndpointInfo("/users", "POST", "Create a new user."));
         userEndpoints.add(new EndpointInfo("/users/{id}", "PATCH", "Update a user by ID (patching specific fields)."));
         userEndpoints.add(new EndpointInfo("/users/{id}", "DELETE", "Delete a user by ID."));
+        userEndpoints.add(new EndpointInfo("/users/{id}/likedPatterns", "GET", "Get a list of liked patterns of a user by ID"));
         return userEndpoints;
     }
 
