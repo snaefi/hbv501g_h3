@@ -74,13 +74,14 @@ public class PatternServiceImplementation implements PatternService {
         }
     }
 
+    @Override
     public String generateImageURL(KnittingPattern pattern) {
         // Generate image
         File patternImage;
         try {
             patternImage = generatePatternThumbnail(pattern);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to generate pattern thumbnail", e);
         }
 
         // Upload image
@@ -88,11 +89,20 @@ public class PatternServiceImplementation implements PatternService {
         try {
             imageURL = imageUploader.uploadImage(patternImage);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to upload pattern image", e);
+        } finally {
+            // Ensure the temporary file is deleted after use
+            if (patternImage != null && patternImage.exists()) {
+                if (!patternImage.delete()) {
+                    System.err.println("Warning: Failed to delete temporary file " + patternImage.getAbsolutePath());
+                }
+            }
         }
 
         return imageURL;
     }
+
+
     private File generatePatternThumbnail(KnittingPattern pattern) throws IOException {
         List<String> patternMatrix = pattern.getPatternMatrix();
         List<String> colorCodes = pattern.getColorCodes();
