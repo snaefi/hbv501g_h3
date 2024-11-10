@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/likedPatterns")
-    public List<KnittingPattern> getLikedPatternIds(@PathVariable Long id) {
+    public List<KnittingPattern> getLikedPatterns(@PathVariable Long id) {
         User user = userService.getUserById(id)
                 .orElseThrow(() -> new ApiExceptions.UserNotFoundException(id));
 
