@@ -140,6 +140,12 @@ public class PatternServiceImplementation implements PatternService {
     }
 
     @Override
+    public Page<KnittingPattern> getLikedPatternsByUser(User user, String title, String username, Pageable pageable) {
+        List<Long> likedPatternIds = user.getLikedPatternIds();
+        return patternRepository.findPatternsByUserLikedPatternIds(likedPatternIds, user.getId(), title, username, pageable);
+    }
+
+    @Override
     public KnittingPattern updatePattern(KnittingPattern knittingPattern) {
         return patternRepository.save(knittingPattern);
     }

@@ -34,7 +34,7 @@ public class ProfileController {
 
     @PostMapping("/uploadPicture")
     @ResponseStatus(HttpStatus.OK)
-    public void uploadProfilePicture(@RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+    public void uploadProfilePicture(@RequestHeader(value = "Authorization") String authorizationHeader,
                                        @RequestParam("file") MultipartFile file) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Invalid Authorization header");

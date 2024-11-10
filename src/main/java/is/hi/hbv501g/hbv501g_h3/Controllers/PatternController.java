@@ -150,15 +150,6 @@ public class PatternController {
         return patternService.savePattern(knittingPattern);
     }
 
-    // @PostMapping("/url")
-    // public ResponseEntity<String> makePattern(@RequestBody Map<String, Object> requestBody) {
-    //     // Access the URL from the request body
-    //     String url = (String) requestBody.get("url");
-    //     System.out.println("Received URL: " + url);
-
-    //     // Return the URL wrapped in a ResponseEntity
-    //     return ResponseEntity.ok(url);
-    // }
     @PostMapping("/url")
     public ResponseEntity<int[][]> generatePattern(@RequestBody PatternRequest request) {
         String imageUrl = request.getUrl();
