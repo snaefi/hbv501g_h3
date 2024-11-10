@@ -102,7 +102,12 @@
 			<artifactId>spring-dotenv</artifactId>
 			<version>4.0.0</version>
 		</dependency>
-
+    <!-- Thumbnailator for image resizing -->
+    <dependency>
+        <groupId>net.coobird</groupId>
+        <artifactId>thumbnailator</artifactId>
+        <version>0.4.8</version>
+    </dependency>
 
 		<!-- Spring Boot Test dependencies -->
 		<dependency>
@@ -110,6 +115,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+</dependency>
 	</dependencies>
 
 	<dependencyManagement>

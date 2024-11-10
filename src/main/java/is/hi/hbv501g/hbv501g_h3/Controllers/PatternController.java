@@ -6,7 +6,10 @@ import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
 import is.hi.hbv501g.hbv501g_h3.Services.AuthenticationService;
 import is.hi.hbv501g.hbv501g_h3.Services.PatternService;
 import is.hi.hbv501g.hbv501g_h3.Services.UserService;
+import is.hi.hbv501g.hbv501g_h3.dto.PatternRequest;
 import jakarta.validation.Valid;
+import net.coobird.thumbnailator.Thumbnails;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,13 +17,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.net.URL;
+import javax.imageio.ImageIO;
+
+
 
 
 @RestController
@@ -114,8 +126,11 @@ public class PatternController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public KnittingPattern createPattern(
+		// data
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-            @Valid @RequestBody KnittingPattern knittingPattern) {
+            @Valid @RequestBody KnittingPattern knittingPattern
+			) {
+
 
         // Validate Authorization header
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
@@ -135,7 +150,55 @@ public class PatternController {
         return patternService.savePattern(knittingPattern);
     }
 
-    @PostMapping("/like/{id}")
+    // @PostMapping("/url")
+    // public ResponseEntity<String> makePattern(@RequestBody Map<String, Object> requestBody) {
+    //     // Access the URL from the request body
+    //     String url = (String) requestBody.get("url");
+    //     System.out.println("Received URL: " + url);
+
+    //     // Return the URL wrapped in a ResponseEntity
+    //     return ResponseEntity.ok(url);
+    // }
+    @PostMapping("/url")
+    public ResponseEntity<int[][]> generatePattern(@RequestBody PatternRequest request) {
+        String imageUrl = request.getUrl();
+        int width = request.getWidth();
+        int numColors = request.getNumColors();
+
+        if (imageUrl == null || imageUrl.isEmpty() || width <= 0 || numColors <= 0) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        try {
+            int[][] matrix = patternService.makeUrlPattern(imageUrl, width, numColors);
+            return ResponseEntity.ok(matrix);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+	@PostMapping("/file")
+    public ResponseEntity<int[][]> generatePatternFromFile(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("width") int width,
+            @RequestParam("numColors") int numColors) {
+
+        if (file.isEmpty() || width <= 0 || numColors <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        try {
+            int[][] matrix = patternService.makeFilePattern(file, width, numColors);
+            return ResponseEntity.ok(matrix);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+	
+	
+	@PostMapping("/like/{id}")
     public void likePattern(
             @PathVariable Long id,
             @RequestHeader(value = "Authorization", required = false) String authorizationHeader) {

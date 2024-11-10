@@ -4,6 +4,7 @@ import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.KnittingPattern;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,4 +19,7 @@ public interface PatternService {
     void likePattern(User user, KnittingPattern pattern);
     void unlikePattern(User user, KnittingPattern pattern);
     void deletePattern(Long id);
+	int[][] makeUrlPattern(String url,int width,int numColors) throws IOException;
+	int[][] makeFilePattern(MultipartFile file, int width, int numColors) throws IOException;
+
 }
