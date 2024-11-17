@@ -9,10 +9,10 @@ import java.util.Optional;
 
 public interface UserService {
     Optional<User> getUserById(Long id);
+    Optional<User> getUserByUsername(String username);
     Page<User> getAllUsers(String username, Pageable pageable);
     User createUser(User user);
     void deleteUser(Long id);
     User updateUser(User user);
     void uploadProfileImage(User user, byte[] imageBytes) throws IOException;
-    Optional<User> findByUsername(String username);
 }

@@ -35,6 +35,11 @@ public class UserServiceImplementation implements UserService {
     }
 
     @Override
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
     public Page<User> getAllUsers(String username, Pageable pageable) {
         return userRepository.searchUsers(username, pageable);
     }
@@ -91,11 +96,5 @@ public class UserServiceImplementation implements UserService {
                 }
             }
         }
-    }
-
-
-    @Override
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
     }
 }

@@ -19,17 +19,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import java.net.URL;
-
-
-import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class PatternServiceImplementation implements PatternService {
@@ -102,6 +95,20 @@ public class PatternServiceImplementation implements PatternService {
         return imageURL;
     }
 
+    @Override
+    public KnittingPattern copyPatternForUser(KnittingPattern originalPattern, User user) {
+        // Create a copy of the pattern
+        KnittingPattern copiedPattern = new KnittingPattern();
+        copiedPattern.setTitle(originalPattern.getTitle() + " (Copy)");
+        copiedPattern.setIsPublic(false);
+        copiedPattern.setPatternMatrix(List.copyOf(originalPattern.getPatternMatrix()));
+        copiedPattern.setColorCodes(List.copyOf(originalPattern.getColorCodes()));
+        copiedPattern.setImageUrl(originalPattern.getImageUrl());
+        copiedPattern.setOwner(user);
+
+        return patternRepository.save(copiedPattern);
+    }
+
 
     private File generatePatternThumbnail(KnittingPattern pattern) throws IOException {
         List<String> patternMatrix = pattern.getPatternMatrix();
@@ -154,8 +161,9 @@ public class PatternServiceImplementation implements PatternService {
     public void deletePattern(Long id) {
         patternRepository.deleteById(id);
     }
+
 	@Override
-public int[][] makeUrlPattern(String url, int width, int numColors) throws IOException {
+    public int[][] makeUrlPattern(String url, int width, int numColors) throws IOException {
         // Fetch the image from the provided URL
         BufferedImage originalImage = ImageIO.read(new URL(url));
 

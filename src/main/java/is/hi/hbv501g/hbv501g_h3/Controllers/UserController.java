@@ -41,6 +41,12 @@ public class UserController {
                 .orElseThrow(() -> new ApiExceptions.UserNotFoundException(id));
     }
 
+    @GetMapping("/username/{username}")
+    public User getUserByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username)
+                .orElseThrow(() -> new ApiExceptions.UserNotFoundException(username));
+    }
+
     @GetMapping
     public Page<User> getAllUsers(
             @RequestParam(value = "username", required = false) String username,

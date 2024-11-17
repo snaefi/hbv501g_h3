@@ -24,7 +24,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String login(String username, String password) {
         // Step 1: Find the user by username
-        User user = userService.findByUsername(username)
+        User user = userService.getUserByUsername(username)
                 .orElseThrow(() -> new ApiExceptions.UsernameNotFoundException(username));
 
         // Step 2: Compare the raw password with the hashed password stored in the database

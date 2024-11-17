@@ -17,6 +17,7 @@ public interface PatternService {
     Page<KnittingPattern> getLikedPatternsByUser(User user, String title, String username, Pageable pageable);
     KnittingPattern updatePattern(KnittingPattern knittingPattern);
     String generateImageURL(KnittingPattern pattern);
+    KnittingPattern copyPatternForUser(KnittingPattern originalPattern, User user);
     void likePattern(User user, KnittingPattern pattern);
     void unlikePattern(User user, KnittingPattern pattern);
     void deletePattern(Long id);

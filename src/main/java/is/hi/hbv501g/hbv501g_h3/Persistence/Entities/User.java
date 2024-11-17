@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -42,6 +43,8 @@ public class User {
     private List<Long> likedPatternIds = new ArrayList<>();
 
     private String profilePicture;
+
+    private final Date joinDate = new Date();
 
     public User() {
     }
@@ -102,5 +105,9 @@ public class User {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public Date getJoinDate() {
+        return joinDate;
     }
 }

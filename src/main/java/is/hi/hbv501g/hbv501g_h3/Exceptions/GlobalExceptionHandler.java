@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
-        body.put("message", "Validation failed");
+        //body.put("message", "Validation failed");
 
         Map<String, String> validationErrors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
             String errorMessage = error.getDefaultMessage();
             validationErrors.put(fieldName, errorMessage);
         });
-        body.put("errors", validationErrors);
+        body.put("message", validationErrors);
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
 
         body.put("status", HttpStatus.BAD_REQUEST.value());
         body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
-        body.put("message", "Validation failed");
+        //body.put("message", "Validation failed");
 
         Map<String, String> validationErrors = new HashMap<>();
         ex.getConstraintViolations().forEach(violation -> {
@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
             String errorMessage = violation.getMessage();
             validationErrors.put(fieldName, errorMessage);
         });
-        body.put("errors", validationErrors);
+        body.put("message", validationErrors);
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

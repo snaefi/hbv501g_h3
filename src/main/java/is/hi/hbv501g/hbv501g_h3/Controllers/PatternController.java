@@ -32,9 +32,6 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import javax.imageio.ImageIO;
 
-
-
-
 @RestController
 @RequestMapping("/patterns")
 @CrossOrigin(origins = "*")
@@ -90,6 +87,26 @@ public class PatternController {
 
         // Call getAllPatterns with isPublic = false and the authenticated user's username
         return getAllPatterns(null, title, user.getUsername(), sortBy, direction, pageable);
+    }
+
+    @PostMapping("/save/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void savePatternById(@RequestHeader(value = "Authorization") String authorizationHeader,
+                                           @PathVariable Long id) {
+        // Validate and extract user from token for private patterns
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new ApiExceptions.UserInvalidAccess("You are not authorized.");
+        }
+
+        String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
+        User user = authenticationService.getProfile(token);
+
+        // Fetch pattern
+        KnittingPattern pattern = patternService.getPatternById(id)
+                .orElseThrow(() -> new ApiExceptions.PatternNotFoundException(id));
+
+        // Use the service to copy the pattern for the authenticated user
+        patternService.copyPatternForUser(pattern, user);
     }
 
     // Endpoint to get a Pattern by ID
