@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 public interface PatternService {
@@ -23,5 +24,15 @@ public interface PatternService {
     void deletePattern(Long id);
 	int[][] makeUrlPattern(String url,int width,int numColors) throws IOException;
 	int[][] makeFilePattern(MultipartFile file, int width, int numColors) throws IOException;
+    int[][] knittingPatternMatrixToMatrix(KnittingPattern knittingPattern);
+    List<String> matrixToKnittingPatternMatrix(int[][] matrix);
+    KnittingPattern addBackground(
+            KnittingPattern knittingPattern,
+            KnittingPattern backgroundPattern,
+            int matrixBackgroundColor,
+            boolean border,
+            int borderColor,
+            int[] backgroundColors
+    );
 
 }

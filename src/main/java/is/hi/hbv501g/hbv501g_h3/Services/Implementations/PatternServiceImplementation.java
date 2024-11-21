@@ -391,4 +391,173 @@ public class PatternServiceImplementation implements PatternService {
 
         return matrix;
     }
+
+    public int[][] knittingPatternMatrixToMatrix(KnittingPattern knittingPattern) {
+        List<String> matrix = knittingPattern.getPatternMatrix();
+        int rows = matrix.size();
+        int width = matrix.getFirst().length();
+
+        int[][] patternMatrix = new int[rows][width];
+
+        for (int i = 0; i < rows; i++) {
+            String row = matrix.get(i);
+            for (int j = 0; j < width; j++) {
+                patternMatrix[i][j] = Character.getNumericValue(row.charAt(j));
+            }
+        }
+        return patternMatrix;
+    }
+
+    public List<String> matrixToKnittingPatternMatrix(int[][] matrix) {
+        List<String> knittingPatternMatrix = new ArrayList<>();
+        for (int i = 0; i < matrix.length; i++) {
+            String row = "";
+            for (int j = 0; j < matrix[i].length; j++) {
+                row.concat(Integer.toString(matrix[i][j]));
+            }
+            knittingPatternMatrix.add(row);
+        }
+        return knittingPatternMatrix;
+    }
+
+
+
+    public KnittingPattern addBackground(
+            KnittingPattern knittingPattern,
+            KnittingPattern backgroundPattern, //background pattern to be added
+            int matrixBackgroundColor, //the color of the background of the knittingPattern
+            boolean border, //adds border around items
+            int borderColor, // color of the border
+            int[] backgroundColors //array of length two, sets the colors of background pattern
+    ) {
+        List<int[]> backgroundStarts = new ArrayList<>(); //ignore this
+
+
+        int[][] matrix = knittingPatternMatrixToMatrix(knittingPattern);
+        int[][] backgroundSmallest = knittingPatternMatrixToMatrix(backgroundPattern);
+
+        int n = matrix.length;
+        int m = matrix[0].length;
+
+        // Slice backgroundSmallest (remove last two rows and last column)
+        int[][] slicedBackground = new int[backgroundSmallest.length - 2][];
+        for (int i = 0; i < backgroundSmallest.length - 2; i++) {
+            slicedBackground[i] = new int[backgroundSmallest[0].length - 1];
+            System.arraycopy(backgroundSmallest[i], 0, slicedBackground[i], 0, backgroundSmallest[0].length - 1);
+        }
+
+        int backgroundSmallestN = slicedBackground.length;
+        int backgroundSmallestM = slicedBackground[0].length;
+
+        // Adjust background knittingPattern values
+        for (int i = 0; i < backgroundSmallestN; i++) {
+            for (int j = 0; j < backgroundSmallestM; j++) {
+                slicedBackground[i][j] = slicedBackground[i][j] == 1 ? 11 : 10;
+            }
+        }
+
+        // Expand background vertically
+        int wholeMultiplesVertical = n / backgroundSmallestN;
+        List<int[]> expandedBackground = new ArrayList<>();
+
+        for (int i = 0; i < wholeMultiplesVertical; i++) {
+            for (int[] row : slicedBackground) {
+                expandedBackground.add(row.clone());
+            }
+        }
+
+        int remainingBackgroundHeight = n - expandedBackground.size();
+        if (remainingBackgroundHeight > 0) {
+            for (int i = 0; i < remainingBackgroundHeight; i++) {
+                expandedBackground.add(slicedBackground[i].clone());
+            }
+        }
+
+        // Expand background horizontally
+        for (int i = 0; i < expandedBackground.size(); i++) {
+            int[] row = expandedBackground.get(i);
+            int wholeMultiplesHorizontal = m / backgroundSmallestM;
+            int[] expandedRow = new int[m];
+
+            for (int j = 0; j < wholeMultiplesHorizontal; j++) {
+                System.arraycopy(row, 0, expandedRow, j * backgroundSmallestM, backgroundSmallestM);
+            }
+
+            int remainingBackgroundLength = m - wholeMultiplesHorizontal * backgroundSmallestM;
+            if (remainingBackgroundLength > 0) {
+                System.arraycopy(row, 0, expandedRow, wholeMultiplesHorizontal * backgroundSmallestM, remainingBackgroundLength);
+            }
+
+            expandedBackground.set(i, expandedRow);
+        }
+
+        int[][] background = expandedBackground.toArray(new int[0][0]);
+
+        // Initialize flood-fill from corners (((or custom starts)))
+        Queue<int[]> toVisit = new LinkedList<>();
+        if (backgroundStarts.isEmpty()) {
+            toVisit.add(new int[]{0, 0});
+            toVisit.add(new int[]{n - 1, 0});
+            toVisit.add(new int[]{0, m - 1});
+            toVisit.add(new int[]{n - 1, m - 1});
+        } else {
+            toVisit.addAll(backgroundStarts);
+        }
+
+        int[] nonBorderColors = {matrixBackgroundColor, 10, 11, 13};
+
+        // Flood-fill algorithm
+        while (!toVisit.isEmpty()) {
+            int[] current = toVisit.poll();
+            if (current == null) break;
+
+            int i = current[0];
+            int j = current[1];
+            boolean borderEncountered = false;
+
+            int[][] directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+            for (int[] dir : directions) {
+                int ni = i + dir[0];
+                int nj = j + dir[1];
+
+                if (ni >= 0 && ni < n && nj >= 0 && nj < m) {
+                    if (matrix[ni][nj] == matrixBackgroundColor &&
+                            toVisit.stream().noneMatch(p -> p[0] == ni && p[1] == nj)) {
+                        toVisit.add(new int[]{ni, nj});
+                    }
+                    boolean isNonBorderColor = false;
+                    for (int color : nonBorderColors) {
+                        if (matrix[ni][nj] == color) {
+                            isNonBorderColor = true;
+                            break;
+                        }
+                    }
+                    if (!isNonBorderColor) {
+                        borderEncountered = true;
+                    }
+                }
+            }
+
+            if (border && borderEncountered) {
+                matrix[i][j] = 13;
+            } else {
+                matrix[i][j] = background[i][j];
+            }
+        }
+
+        // Replace values in the matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (matrix[i][j] == 11) matrix[i][j] = backgroundColors[1];
+                if (matrix[i][j] == 10) matrix[i][j] = backgroundColors[0];
+                if (border && matrix[i][j] == 13) matrix[i][j] = borderColor;
+            }
+        }
+
+        List<String> knittingPatternMatrix = matrixToKnittingPatternMatrix(matrix);
+        knittingPattern.setPatternMatrix(knittingPatternMatrix);
+
+        return knittingPattern;
+    }
 }
