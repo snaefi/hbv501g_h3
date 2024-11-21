@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -225,18 +226,47 @@ public class PatternController {
         }
     }
 
-    @PostMapping("{id}")
+    @PostMapping("/{id}")
     public KnittingPattern addBackground(
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            // @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
             @PathVariable Long id,
-            @PathVariable Long backgroundId,
-            @PathVariable int patternbackgroundColor,
+			@RequestParam("pattern0") String[] pattern0,
+			@RequestParam("background0") String[] background0,
+			// @RequestParam("color") String patternbackgroundColor,
             @PathVariable int[] backgroundColors
     ) {
-        KnittingPattern pattern = getPatternById(authorizationHeader, id);
-        KnittingPattern background = getPatternById(authorizationHeader, backgroundId);
+    // Convert the array of strings into a List<String> for `patternMatrix`
+    List<String> patternMatrix = List.of(pattern0);
+	List<String> bgMatrix = List.of(background0);
+    // Example: Validate that all strings are of the same length (optional but good practice)
+	int rowLengthbg = bgMatrix.get(0).length();
+    for (String row : bgMatrix) {
+        if (row.length() != rowLengthbg) {
+            throw new IllegalArgumentException("All rows in the pattern matrix must have the same length.");
+        }
+    }
+	KnittingPattern background= new KnittingPattern();
+    background.setTitle("New Pattern"); // Replace with the actual title
+    background.setIsPublic(true); // Adjust based on your requirements
+    background.setPatternMatrix(bgMatrix);
 
-        return patternService.addBackground(pattern, background, patternbackgroundColor, true, 1, backgroundColors);
+
+    int rowLength = patternMatrix.get(0).length();
+    for (String row : patternMatrix) {
+        if (row.length() != rowLength) {
+            throw new IllegalArgumentException("All rows in the pattern matrix must have the same length.");
+        }
+    }
+
+    // Create a KnittingPattern instance
+    KnittingPattern pattern = new KnittingPattern();
+    pattern.setTitle("New Pattern"); // Replace with the actual title
+    pattern.setIsPublic(true); // Adjust based on your requirements
+    pattern.setPatternMatrix(patternMatrix);
+
+
+
+        return patternService.addBackground(pattern, background, 0, true, 1, backgroundColors);
     }
 
     @PatchMapping("/{id}")
