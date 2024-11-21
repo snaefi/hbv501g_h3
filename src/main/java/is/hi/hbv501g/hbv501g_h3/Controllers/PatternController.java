@@ -186,7 +186,7 @@ public class PatternController {
     // Create pattern
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
- public ResponseEntity<KnittingPattern> createPattern(
+ public KnittingPattern createPattern(
         @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
         @Valid @RequestBody KnittingPattern knittingPattern
     ) {
@@ -205,16 +205,16 @@ public class PatternController {
         knittingPattern.setOwner(owner);
 
         // Save and return the created pattern
-        KnittingPattern savedPattern = patternService.savePattern(knittingPattern);
+        // KnittingPattern savedPattern = patternService.savePattern(knittingPattern);
+		return patternService.savePattern(knittingPattern);
+        // // Optionally include a `Location` header pointing to the created resource
+        // URI location = ServletUriComponentsBuilder
+        //         .fromCurrentRequest()
+        //         .path("/{id}")
+        //         .buildAndExpand(savedPattern.getId())
+        //         .toUri();
 
-        // Optionally include a `Location` header pointing to the created resource
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedPattern.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(savedPattern);
+        // return ResponseEntity.created(location).body(savedPattern);
     }
 
     @PostMapping("/url")
