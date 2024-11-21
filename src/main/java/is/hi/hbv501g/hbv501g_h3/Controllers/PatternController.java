@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.imageio.ImageIO;
 
 @RestController
@@ -186,7 +187,7 @@ public class PatternController {
     // Create pattern
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
- public KnittingPattern createPattern(
+    public KnittingPattern createPattern(
         @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
         @Valid @RequestBody KnittingPattern knittingPattern
     ) {
@@ -194,6 +195,7 @@ public class PatternController {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Invalid Authorization header");
         }
+        System.out.println(knittingPattern.getColorCodes());
 
         // Extract token and get user profile
         String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
@@ -205,16 +207,7 @@ public class PatternController {
         knittingPattern.setOwner(owner);
 
         // Save and return the created pattern
-        // KnittingPattern savedPattern = patternService.savePattern(knittingPattern);
 		return patternService.savePattern(knittingPattern);
-        // // Optionally include a `Location` header pointing to the created resource
-        // URI location = ServletUriComponentsBuilder
-        //         .fromCurrentRequest()
-        //         .path("/{id}")
-        //         .buildAndExpand(savedPattern.getId())
-        //         .toUri();
-
-        // return ResponseEntity.created(location).body(savedPattern);
     }
 
     @PostMapping("/url")
@@ -291,6 +284,8 @@ public class PatternController {
         KnittingPattern existingPattern = patternService.getPatternById(id)
                 .orElseThrow(() -> new ApiExceptions.PatternNotFoundException(id));
 
+        AtomicBoolean shouldGenerateImage = new AtomicBoolean(false);
+
         updates.forEach((field, value) -> {
             switch (field) {
                 case "title":
@@ -300,20 +295,37 @@ public class PatternController {
                     existingPattern.setIsPublic((Boolean) value);
                     break;
                 case "colorCodes":
-                    List<String> colorCodes = (List<String>) value;
-                    existingPattern.setColorCodes(colorCodes);
+                    List<String> newColorCodes = (List<String>) value;
+                    if (!newColorCodes.equals(existingPattern.getColorCodes())) {
+                        existingPattern.setColorCodes(newColorCodes);
+                        shouldGenerateImage.set(true);
+                    }
+                    break;
                 case "patternMatrix":
-                    List<String> patternMatrix = (List<String>) value;
-                    existingPattern.setPatternMatrix(patternMatrix);
+                    List<String> newPatternMatrix = (List<String>) value;
+                    if (!newPatternMatrix.equals(existingPattern.getPatternMatrix())) {
+                        existingPattern.setPatternMatrix(newPatternMatrix);
+                        shouldGenerateImage.set(true);
+                    }
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid field: " + field);
             }
         });
 
+        // Generate a new image only if patternMatrix has changed
+        if (shouldGenerateImage.get()) {
+            String imageURL = patternService.generateImageURL(existingPattern);
+            existingPattern.setImageUrl(imageURL);
+        }
+
+        // update modification date
+        existingPattern.setModificationDate(new Date());
+
         // Save the updated pattern
         return patternService.updatePattern(existingPattern);
     }
+
 
     // Delete a pattern by ID
     @DeleteMapping("/{id}")

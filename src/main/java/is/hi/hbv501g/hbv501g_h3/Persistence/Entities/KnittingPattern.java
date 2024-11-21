@@ -63,14 +63,14 @@ public class KnittingPattern {
     public KnittingPattern() {
     }
 
-    public KnittingPattern(String title, Boolean isPublic, List<String> patternMatrix, User owner) {
+    public KnittingPattern(String title, Boolean isPublic, List<String> patternMatrix, List<String> colorCodes, User owner) {
         this.title = title;
         this.isPublic = isPublic;
         this.patternMatrix = patternMatrix;
         this.owner = owner;
 
         this.imageUrl = "https://i.ibb.co/ScdWZ38/5x5.png"; // 5x5 test pattern as default for now
-        this.colorCodes = List.of("#3A9AD9", "#FF6347", "#7FFF00", "#7FAF00"); // default color for now
+        this.colorCodes = colorCodes;
     }
 
     // Getters and Setters

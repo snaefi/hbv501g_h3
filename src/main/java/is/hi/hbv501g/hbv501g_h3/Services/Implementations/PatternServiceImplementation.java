@@ -135,11 +135,12 @@ public class PatternServiceImplementation implements PatternService {
             String row = patternMatrix.get(y);
             for (int x = 0; x < width; x++) {
                 int colorIndex = Character.getNumericValue(row.charAt(x)); // Get color index as integer
-                if (colorIndex >= 0 && colorIndex < colorCodes.size()) { // Ensure index is within colorCodes bounds
-                    String hexColor = colorCodes.get(colorIndex); // Get the hex color code
+                if (colorIndex > 0 && colorIndex <= colorCodes.size()) { // Adjust index to start from 1 and ensure it is within colorCodes bounds
+                    String hexColor = colorCodes.get(colorIndex - 1); // Get the hex color code (1 maps to colorCodes[0])
                     Color color = Color.decode(hexColor); // Convert hex color to Color object
                     image.setRGB(x, y, color.getRGB()); // Set pixel color in image
                 }
+                // If colorIndex is 0, leave the pixel transparent (do nothing)
             }
         }
 
@@ -149,6 +150,7 @@ public class PatternServiceImplementation implements PatternService {
 
         return outputFile;
     }
+
 
 
     @Override
