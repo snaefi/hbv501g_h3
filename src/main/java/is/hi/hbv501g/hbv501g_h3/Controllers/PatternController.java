@@ -225,6 +225,20 @@ public class PatternController {
         }
     }
 
+    @PostMapping("{id}")
+    public KnittingPattern addBackground(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @PathVariable Long id,
+            @PathVariable Long backgroundId,
+            @PathVariable int patternbackgroundColor,
+            @PathVariable int[] backgroundColors
+    ) {
+        KnittingPattern pattern = getPatternById(authorizationHeader, id);
+        KnittingPattern background = getPatternById(authorizationHeader, backgroundId);
+
+        return patternService.addBackground(pattern, background, patternbackgroundColor, true, 1, backgroundColors);
+    }
+
     @PatchMapping("/{id}")
     public KnittingPattern patchPattern(
             @PathVariable Long id,
