@@ -318,10 +318,26 @@ public class PatternController {
     // Delete a pattern by ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)  // 204 No Content
-    public void deletePattern(@PathVariable Long id) {
+    public void deletePattern(@PathVariable Long id,
+                              @RequestHeader(value = "Authorization") String authorizationHeader) {
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        String token = authorizationHeader.substring(7);
+
+        // Authenticate the user with the token
+        User user = authenticationService.getProfile(token);
+
         // Ensure the pattern exists before deletion
-        patternService.getPatternById(id)
+        KnittingPattern pattern = patternService.getPatternById(id)
                 .orElseThrow(() -> new ApiExceptions.PatternNotFoundException(id));
+
+        // Check if pattern belongs to the user
+        if (!Objects.equals(pattern.getOwnerUsername(), user.getUsername())) {
+            throw new ApiExceptions.UserInvalidAccess("Not authorized to delete this pattern.");
+        }
 
         patternService.deletePattern(id);
     }
