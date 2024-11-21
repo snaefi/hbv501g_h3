@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
@@ -29,6 +30,7 @@ import java.util.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.net.URI;
 import java.net.URL;
 import javax.imageio.ImageIO;
 
@@ -184,13 +186,10 @@ public class PatternController {
     // Create pattern
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public KnittingPattern createPattern(
-		// data
-            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
-            @Valid @RequestBody KnittingPattern knittingPattern
-			) {
-
-
+ public ResponseEntity<KnittingPattern> createPattern(
+        @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+        @Valid @RequestBody KnittingPattern knittingPattern
+    ) {
         // Validate Authorization header
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new IllegalArgumentException("Invalid Authorization header");
@@ -206,7 +205,16 @@ public class PatternController {
         knittingPattern.setOwner(owner);
 
         // Save and return the created pattern
-        return patternService.savePattern(knittingPattern);
+        KnittingPattern savedPattern = patternService.savePattern(knittingPattern);
+
+        // Optionally include a `Location` header pointing to the created resource
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedPattern.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(savedPattern);
     }
 
     @PostMapping("/url")
