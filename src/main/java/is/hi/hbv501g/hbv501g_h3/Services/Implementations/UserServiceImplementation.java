@@ -1,6 +1,10 @@
 package is.hi.hbv501g.hbv501g_h3.Services.Implementations;
 
 import is.hi.hbv501g.hbv501g_h3.Exceptions.ApiExceptions;
+import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.KnittingPattern;
+import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.Notification;
+import is.hi.hbv501g.hbv501g_h3.Persistence.Repositories.NotificationRepository;
+import is.hi.hbv501g.hbv501g_h3.Persistence.Repositories.PatternRepository;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Repositories.UserRepository;
 import is.hi.hbv501g.hbv501g_h3.Services.ImageUploader;
 import is.hi.hbv501g.hbv501g_h3.Services.UserService;
@@ -15,12 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserServiceImplementation implements UserService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PatternRepository patternRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -54,6 +65,47 @@ public class UserServiceImplementation implements UserService {
         } catch (DataIntegrityViolationException e) {
             throw new ApiExceptions.UserAlreadyExists();
         }
+    }
+
+    @Override
+    public List<Notification> getUserNotifications(User user) {
+        // Fetch and return notifications for the user
+        return notificationRepository.findByUser_Username(user.getUsername());
+    }
+
+    @Override
+    public void acceptNotification(User authenticatedUser, Long notificationId) {
+        // Fetch the notification
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ApiExceptions.NotificationNotFoundException(notificationId));
+
+        // Ensure the notification belongs to the authenticated user
+        if (!notification.getUser().getId().equals(authenticatedUser.getId())) {
+            throw new ApiExceptions.InvalidTokenException();
+        }
+
+        // Act on the notification: Add the user as a collaborator to the associated pattern
+        KnittingPattern pattern = notification.getPattern();
+        pattern.addCollaborator(authenticatedUser);
+        patternRepository.save(pattern);
+
+        // Dismiss (delete) the notification
+        notificationRepository.delete(notification);
+    }
+
+    @Override
+    public void declineNotification(User user, Long notificationId) {
+        // Fetch the notification
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new ApiExceptions.NotificationNotFoundException(notificationId));
+
+        // Validate that the notification belongs to the user
+        if (!notification.getUser().getId().equals(user.getId())) {
+            throw new ApiExceptions.InvalidTokenException();
+        }
+
+        // Delete the notification
+        notificationRepository.delete(notification);
     }
 
     @Override

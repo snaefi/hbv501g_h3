@@ -1,5 +1,6 @@
 package is.hi.hbv501g.hbv501g_h3.Controllers;
 
+import is.hi.hbv501g.hbv501g_h3.Events.PatternSharedEvent;
 import is.hi.hbv501g.hbv501g_h3.Exceptions.ApiExceptions;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.KnittingPattern;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import net.coobird.thumbnailator.Thumbnails;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,10 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.security.InvalidParameterException;
+import java.util.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -44,6 +44,9 @@ public class PatternController {
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
 
     // Helper function to get patterns with customizable parameters
@@ -89,6 +92,43 @@ public class PatternController {
         return getAllPatterns(null, title, user.getUsername(), sortBy, direction, pageable);
     }
 
+    @PostMapping("/share/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void sharePattern(@PathVariable Long id,
+                             @RequestHeader(value = "Authorization") String authorizationHeader,
+                             @RequestBody Map<String, String> request) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        String token = authorizationHeader.substring(7);
+        User user = authenticationService.getProfile(token);
+
+        String targetUsername = request.get("username");
+
+        if (Objects.equals(targetUsername, user.getUsername())) {
+            throw new InvalidParameterException("Can't share with yourself!");
+        }
+
+        if (targetUsername == null || targetUsername.isBlank()) {
+            throw new InvalidParameterException("Username must be provided");
+        }
+
+        KnittingPattern pattern = patternService.getPatternById(id).orElseThrow(() -> new ApiExceptions.PatternNotFoundException(id));
+
+        // Check if user owns pattern being shared
+        if (!Objects.equals(pattern.getOwnerUsername(), user.getUsername())) {
+            throw new ApiExceptions.NotAuthorizedException();
+        }
+
+        // Get user for receiving the notification
+        User targetUser = userService.getUserByUsername(targetUsername)
+                .orElseThrow(() -> new ApiExceptions.UserNotFoundException(targetUsername));
+
+        PatternSharedEvent event = new PatternSharedEvent(pattern, targetUser);
+        eventPublisher.publishEvent(event);
+    }
+
     @PostMapping("/save/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void savePatternById(@RequestHeader(value = "Authorization") String authorizationHeader,
@@ -130,8 +170,10 @@ public class PatternController {
         String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
         User user = authenticationService.getProfile(token);
 
-        // Check if the authenticated user owns the pattern
-        if (!pattern.getOwnerUsername().equals(user.getUsername())) {
+        boolean isOwner = pattern.getOwnerUsername().equals(user.getUsername());
+        boolean isCollaborator = pattern.getCollaboratorUsernames().contains(user.getUsername());
+
+        if (!isOwner && !isCollaborator) {
             throw new ApiExceptions.UserInvalidAccess("You are not authorized to view this pattern.");
         }
 
@@ -249,8 +291,10 @@ public class PatternController {
                 case "isPublic":
                     existingPattern.setIsPublic((Boolean) value);
                     break;
+                case "colorCodes":
+                    List<String> colorCodes = (List<String>) value;
+                    existingPattern.setColorCodes(colorCodes);
                 case "patternMatrix":
-                    @SuppressWarnings("unchecked")
                     List<String> patternMatrix = (List<String>) value;
                     existingPattern.setPatternMatrix(patternMatrix);
                     break;

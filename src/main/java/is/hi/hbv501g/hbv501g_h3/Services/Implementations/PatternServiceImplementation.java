@@ -96,7 +96,7 @@ public class PatternServiceImplementation implements PatternService {
     }
 
     @Override
-    public KnittingPattern copyPatternForUser(KnittingPattern originalPattern, User user) {
+    public void copyPatternForUser(KnittingPattern originalPattern, User user) {
         // Create a copy of the pattern
         KnittingPattern copiedPattern = new KnittingPattern();
         copiedPattern.setTitle(originalPattern.getTitle() + " (Copy)");
@@ -106,7 +106,17 @@ public class PatternServiceImplementation implements PatternService {
         copiedPattern.setImageUrl(originalPattern.getImageUrl());
         copiedPattern.setOwner(user);
 
-        return patternRepository.save(copiedPattern);
+        patternRepository.save(copiedPattern);
+    }
+
+    @Override
+    public Page<KnittingPattern> getSharedPatternsWithUser(User user, String title, String ownerUsername, Pageable pageable) {
+        return patternRepository.findSharedPatternsWithUser(
+                user.getUsername(),
+                title,
+                ownerUsername,
+                pageable
+        );
     }
 
 
@@ -149,7 +159,7 @@ public class PatternServiceImplementation implements PatternService {
     @Override
     public Page<KnittingPattern> getLikedPatternsByUser(User user, String title, String username, Pageable pageable) {
         List<Long> likedPatternIds = user.getLikedPatternIds();
-        return patternRepository.findPatternsByUserLikedPatternIds(likedPatternIds, user.getId(), title, username, pageable);
+        return patternRepository.findPatternsByUserLikedPatternIds(likedPatternIds, user.getId(), user, title, username, pageable);
     }
 
     @Override

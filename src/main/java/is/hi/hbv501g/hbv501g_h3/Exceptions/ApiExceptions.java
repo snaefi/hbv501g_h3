@@ -23,6 +23,13 @@ public class ApiExceptions {
             super("Pattern not found with id: " + id, HttpStatus.NOT_FOUND);
         }
     }
+
+    public static class NotificationNotFoundException extends ApiException {
+        public NotificationNotFoundException(Long id) {
+            super("Notification not found with id: " + id, HttpStatus.NOT_FOUND);
+        }
+    }
+
     public static class UserNotFoundException extends ApiException {
         public UserNotFoundException(Long id) {
             super("User not found with id: " + id, HttpStatus.NOT_FOUND);
@@ -66,6 +73,16 @@ public class ApiExceptions {
     public static class ProfilePictureUploadException extends ApiException {
         public ProfilePictureUploadException() {
             super("Failed to upload profile picture", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public static class NotAuthorizedException extends ApiException {
+        public NotAuthorizedException() {
+            super("You are not authorized to perform this action", HttpStatus.FORBIDDEN);
+        }
+
+        public NotAuthorizedException(String message) {
+            super(message, HttpStatus.FORBIDDEN);
         }
     }
 }

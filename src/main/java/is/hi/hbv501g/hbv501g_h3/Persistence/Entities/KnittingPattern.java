@@ -1,5 +1,6 @@
 package is.hi.hbv501g.hbv501g_h3.Persistence.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import is.hi.hbv501g.hbv501g_h3.util.ConsistentRowLength;
@@ -8,8 +9,10 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "patterns")
@@ -48,6 +51,15 @@ public class KnittingPattern {
     //@NotNull(message = "An owner (user) must be specified.")
     private User owner;
 
+    @ManyToMany
+    @JoinTable(
+            name = "pattern_collaborators",
+            joinColumns = @JoinColumn(name = "pattern_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonIgnore
+    private List<User> collaborators = new ArrayList<>(); // List of users collaborating on this pattern
+
     public KnittingPattern() {
     }
 
@@ -58,7 +70,7 @@ public class KnittingPattern {
         this.owner = owner;
 
         this.imageUrl = "https://i.ibb.co/ScdWZ38/5x5.png"; // 5x5 test pattern as default for now
-        this.colorCodes = List.of("#3A9AD9", "#FF6347", "#7FFF00"); // default color for now
+        this.colorCodes = List.of("#3A9AD9", "#FF6347", "#7FFF00", "#7FAF00"); // default color for now
     }
 
     // Getters and Setters
@@ -152,5 +164,26 @@ public class KnittingPattern {
 
     public void setColorCodes(@NotEmpty(message = "Color codes cant be empty") List<String> colorCodes) {
         this.colorCodes = colorCodes;
+    }
+
+    public List<User> getCollaborators() {
+        return collaborators;
+    }
+
+    public void addCollaborator(User user) {
+        if (!collaborators.contains(user)) {
+            collaborators.add(user);
+        }
+    }
+
+    public void removeCollaborator(User user) {
+        collaborators.remove(user);
+    }
+
+    @JsonProperty("collaboratorNames")
+    public List<String> getCollaboratorUsernames() {
+        return collaborators.stream()
+                .map(User::getUsername)
+                .collect(Collectors.toList());
     }
 }

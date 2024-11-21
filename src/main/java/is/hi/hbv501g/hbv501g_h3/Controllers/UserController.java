@@ -2,6 +2,7 @@ package is.hi.hbv501g.hbv501g_h3.Controllers;
 
 import is.hi.hbv501g.hbv501g_h3.Exceptions.ApiExceptions;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.KnittingPattern;
+import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.Notification;
 import is.hi.hbv501g.hbv501g_h3.Persistence.Entities.User;
 import is.hi.hbv501g.hbv501g_h3.Services.AuthenticationService;
 import is.hi.hbv501g.hbv501g_h3.Services.PatternService;
@@ -16,9 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 @RestController
@@ -46,6 +47,52 @@ public class UserController {
         return userService.getUserByUsername(username)
                 .orElseThrow(() -> new ApiExceptions.UserNotFoundException(username));
     }
+
+    @GetMapping("/notifications")
+    public List<Notification> getUserNotifications(@RequestHeader(value = "Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        String token = authorizationHeader.substring(7);
+
+        // Authenticate the user with the token
+        User user = authenticationService.getProfile(token);
+        return userService.getUserNotifications(user);
+    }
+
+    @PostMapping("/notifications/{id}/accept")
+    @ResponseStatus(HttpStatus.OK)
+    public void acceptNotification(@PathVariable Long id,
+                                                 @RequestHeader(value = "Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        String token = authorizationHeader.substring(7);
+
+        // Authenticate the user with the token
+        User user = authenticationService.getProfile(token);
+
+        userService.acceptNotification(user, id);
+    }
+
+    @PostMapping("/notifications/{id}/decline")
+    @ResponseStatus(HttpStatus.OK)
+    public void declineNotification(@PathVariable Long id,
+                                                 @RequestHeader(value = "Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        String token = authorizationHeader.substring(7);
+
+        // Authenticate the user with the token
+        User user = authenticationService.getProfile(token);
+
+        userService.declineNotification(user, id);
+    }
+
 
     @GetMapping
     public Page<User> getAllUsers(
@@ -80,6 +127,31 @@ public class UserController {
         return patternService.getLikedPatternsByUser(user, title, username, sortedPageable);
     }
 
+    @GetMapping("/sharedPatterns")
+    public Page<KnittingPattern> getSharedPatterns(
+            @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "username", required = false) String username,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy,
+            @RequestParam(value = "direction", required = false, defaultValue = "asc") String direction,
+            @PageableDefault(size = 8) Pageable pageable) {
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        String token = authorizationHeader.substring(7);
+
+        // Authenticate the user with the token
+        User user = authenticationService.getProfile(token);
+
+        // Apply sorting based on parameters
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+
+        return patternService.getSharedPatternsWithUser(user, title, username, sortedPageable);
+    }
+
     // Create a new user
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -88,20 +160,38 @@ public class UserController {
     }
 
     // Delete a user by ID
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable Long id) {
-        userService.getUserById(id)
-                .orElseThrow(() -> new ApiExceptions.UserNotFoundException(id));
+    public void deleteUser(@RequestHeader(value = "Authorization") String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
 
-        userService.deleteUser(id);
+        String token = authorizationHeader.substring(7);
+
+        // Authenticate the user with the token
+        User existingUser = authenticationService.getProfile(token);
+
+        userService.deleteUser(existingUser.getId());
+    }
+
+    private boolean isPasswordValid(String password) {
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}$";
+        return password != null && !password.isEmpty() && Pattern.matches(passwordRegex, password);
     }
 
     // Patch user
-    @PatchMapping("/{id}")
-    public User patchUser(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
-        User existingUser = userService.getUserById(id)
-                .orElseThrow(() -> new ApiExceptions.UserNotFoundException(id));
+    @PatchMapping
+    public User patchUser(@RequestHeader(value = "Authorization") String authorizationHeader, @RequestBody Map<String, Object> updates) {
+
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new IllegalArgumentException("Invalid Authorization header");
+        }
+
+        String token = authorizationHeader.substring(7);
+
+        // Authenticate the user with the token
+        User existingUser = authenticationService.getProfile(token);
 
         updates.forEach((field, value) -> {
             switch (field) {
@@ -109,6 +199,13 @@ public class UserController {
                     existingUser.setUsername((String) value);
                     break;
                 case "password":
+                    // very bad
+                    if (!isPasswordValid((String) value)) {
+                        throw new IllegalArgumentException(
+                                "Invalid password: Password must contain at least one digit, one lowercase letter, " +
+                                        "one uppercase letter, one special character (@#$%^&+=!), and be at least 8 characters long"
+                        );
+                    }
                     existingUser.setPassword((String) value);
                     break;
                 default:
